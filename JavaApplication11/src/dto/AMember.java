@@ -13,6 +13,14 @@ public class AMember {
 
     private int membernum , mhobby;
     private String mid, mpwd, mname, mloc, mjumin, mgender,mdate;
+
+    public String getMgender() {
+        return mgender;
+    }
+
+    public void setMgender(String mgender) {
+        this.mgender = mgender;
+    }
     
     
     public int getMembernum() {

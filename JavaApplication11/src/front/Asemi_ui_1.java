@@ -1,5 +1,5 @@
 package front;
-//다시한번 실습해봅니디ㅏ
+
 import dto.AGroup;
 import dto.AJoin;
 import model.Model;
@@ -27,7 +27,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private Socket s;
     private PrintWriter pw;
     private int hobbynum;
-
+    
     public Asemi_ui_1() {
         initComponents();
         card = (CardLayout) pp.getLayout();
