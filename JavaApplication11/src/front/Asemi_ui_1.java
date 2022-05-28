@@ -1,5 +1,5 @@
 package front;
-
+//다시한번 실습해봅니디ㅏ
 import dto.AGroup;
 import dto.AJoin;
 import model.Model;
