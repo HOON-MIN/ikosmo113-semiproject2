@@ -45,8 +45,8 @@ content varchar2(200) ,
 groupnum number ,
 bdate date,
 wlist number,
-constraint board_groupnum_fk foreign key(groupnum) references ajoin(groupnum),
-constraint board_membernum_fk foreign key(membernum) references ajoin(membernum)
+constraint board_groupnum_fk foreign key(groupnum) references agroup(groupnum),
+constraint board_membernum_fk foreign key(membernum) references amember(membernum)
 );
 
 create table boardcomm(
@@ -55,7 +55,7 @@ boardnum number,
 membernum number,
 content varchar2(200),
 cdate date,
-constraint BOARDCOMM_MEMBERNUM_FK foreign key(membernum) references ajoin(membernum),
+constraint BOARDCOMM_MEMBERNUM_FK foreign key(membernum) references amember(membernum),
 constraint BOARDCOMM_BOARDNUM__FK foreign key(boardnum) references board(boardnum)
 );
 
@@ -63,7 +63,7 @@ create table chat (
 cnum number primary key,
 groupnum number ,
 cdate date,
-constraint chat_groupnum_fk foreign key(groupnum) references ajoin(groupnum)
+constraint chat_groupnum_fk foreign key(groupnum) references agroup(groupnum)
 );
 
 create sequence membernum_seq
