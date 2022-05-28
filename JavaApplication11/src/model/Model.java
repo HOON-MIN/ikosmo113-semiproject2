@@ -1,7 +1,10 @@
 
 package model;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e9a8a9e7f86c266649f0a421f6f206c812bd35be
 import dao.ADao;
 import dto.AGroup;
 import dto.AJoin;
@@ -52,12 +55,20 @@ public class Model {
      public ArrayList<AJoin> listGroupMd(int num){
          return ADao.getDao().listGroup(num);
      }
+<<<<<<< HEAD
      // 내 정보 변경
+=======
+     // 내 정보 변경 (@author 현진)
+>>>>>>> e9a8a9e7f86c266649f0a421f6f206c812bd35be
      public void updateMyInfoMd(AMember ref, String mloc, int mhobby){
          ADao.getDao().updateMyInfo(ref, mloc, mhobby);
      }
      
+<<<<<<< HEAD
      // 내가 가입한 모임 리스트 불러오기 
+=======
+     // 내가 가입한 모임 리스트 불러오기 (@author 현진)
+>>>>>>> e9a8a9e7f86c266649f0a421f6f206c812bd35be
      public ArrayList<AJoin> listMyGroupMd(int num) {
          return ADao.getDao().listMyGroup(num);
      }
@@ -66,8 +77,13 @@ public class Model {
          ADao.getDao().addBoard(b,aj);
      }
      // 게시판 글 목록 출력
+<<<<<<< HEAD
      public ArrayList<Board> listBoardMd(AGroup group){
          return ADao.getDao().listBoard(group);
+=======
+     public ArrayList<Board> listBoardMd(AGroup num){
+         return ADao.getDao().listBoard(num);
+>>>>>>> e9a8a9e7f86c266649f0a421f6f206c812bd35be
      }
      // 게시글 상세내용 출력
      public Board getDetail(Board a) {
@@ -82,6 +98,7 @@ public class Model {
        public ArrayList<BoardComm> getDetailBoardCommMd(BoardComm bc){
            return ADao.getDao().getDetailBoardComm(bc);
        }
+<<<<<<< HEAD
        // 내가 가입한 모임 탈퇴하기
      public void deleteMyMoimMd(AJoin a){
          ADao.getDao().deleteMyMoim(a);
@@ -90,4 +107,6 @@ public class Model {
       public ArrayList<AGroup> selectGroupHobby(int num) {
         return  ADao.getDao().selectGroupHobby(num);
       }
+=======
+>>>>>>> e9a8a9e7f86c266649f0a421f6f206c812bd35be
 }
