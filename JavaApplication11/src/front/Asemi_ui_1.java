@@ -27,7 +27,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private Socket s;
     private PrintWriter pw;
     private int hobbynum;
-    
+        private int a;
     public Asemi_ui_1() {
         initComponents();
         card = (CardLayout) pp.getLayout();
