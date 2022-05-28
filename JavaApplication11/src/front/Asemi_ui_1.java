@@ -27,6 +27,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private Socket s;
     private PrintWriter pw;
     private int hobbynum;
+    private int b;
     
     public Asemi_ui_1() {
         initComponents();
