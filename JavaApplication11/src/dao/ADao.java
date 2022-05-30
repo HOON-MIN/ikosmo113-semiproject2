@@ -1125,6 +1125,63 @@ public class ADao {
             }
         }
     }
+     // 모임장 확인
+    public int ckMoimjang2(AJoin aj){
+        Connection con = null;
+        PreparedStatement ps = null, ps2 =null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select membernum from ajoin where groupnum = ? and joinmember = 1";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, aj.getGroupnum());
+            rs = ps.executeQuery();
+            while(rs.next()){
+                if(rs.getInt("membernum") == aj.getMembernum()){
+                    return 1;
+                }
+            }
+    }catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return 0;
+    }
+    public void deleteMyMoim2(AJoin a){
+            // 모임 삭제
+            Connection con = null;
+            PreparedStatement ps = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "delete from agroup where groupnum=?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, a.getGroupnum());   
+            ps.executeUpdate();           
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }finally{
+            try {
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+            
+        }
 }
 
     
