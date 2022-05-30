@@ -143,4 +143,13 @@ public class Model {
       public int kickPpl(AJoin aj){
           return ADao.getDao().kickPpl(aj);
       }
+      
+      // 모임장이 모임 삭제하기
+     public void deleteMyMoim2(AJoin a){
+         ADao.getDao().deleteMyMoim2(a);
+     }
+     // 모임장인지 확인
+     public int ckMoimjang2(AJoin aj){
+         return ADao.getDao().ckMoimjang2(aj);
+     }
 }

@@ -2006,14 +2006,25 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_talkBarActionPerformed
 
     private void moim_delete_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_delete_BtnActionPerformed
-         // 내정보페이지에서 모임 탈퇴하기 버튼
-        
-        AJoin a = new AJoin();
-        a.setMembernum(mem.getMembernum());
-        a.setGroupnum(Integer.parseInt(moimnum_v.getText()));
-        
-        md.deleteMyMoimMd(a);
+        // 내정보페이지에서 모임 탈퇴하기 버튼
+        int delnum = Integer.parseInt(moimnum_v.getText());
+        AJoin aj = new AJoin();
+        aj.setMembernum(mem.getMembernum());
+        aj.setGroupnum(delnum);
+        int b = md.ckMoimjang2(aj);
+
+        if(b==1){ // 모임장이 모임 삭제
+             int i = JOptionPane.showConfirmDialog(rootPane, "당신은 모임장입니다 모임을 삭제하시겠습니까?", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+
+        if(i==0){
+        md.deleteMyMoim2(aj);
+        JOptionPane.showMessageDialog(board_content, "모임이 삭제되었습니다.");
+         myGroupList(md.listMyGroupMd(mem.getMembernum()));
+            }
+        }else{ // 모임원이 모임 탈퇴
+        md.deleteMyMoimMd(aj);
         myGroupList(md.listMyGroupMd(mem.getMembernum()));
+        }    
     }//GEN-LAST:event_moim_delete_BtnActionPerformed
 
     private void tochatingPanalBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tochatingPanalBtn2ActionPerformed
