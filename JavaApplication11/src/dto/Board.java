@@ -15,12 +15,18 @@ GROUPNUM  NOT NULL NUMBER
 BDATE              DATE    
  */
 public class Board {
-    private int boardnum,membernum,groupnum;
+    private int boardnum,membernum,groupnum,wlist;
     private String subject,content,bdate;
     private AMember amember;
 
-   
+    public int getWlist() {
+        return wlist;
+    }
 
+    public void setWlist(int wlist) {
+        this.wlist = wlist;
+    }
+   
     public AMember getAmember() {
         return amember;
     }

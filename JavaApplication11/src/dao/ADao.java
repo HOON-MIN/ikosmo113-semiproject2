@@ -7,15 +7,16 @@ import dto.AJoin;
 import dto.AMember;
 import dto.Board;
 import dto.BoardComm;
+import dto.Hobby;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.GroupLayout;
 import javax.swing.JOptionPane;
 import oracle.jdbc.OracleTypes;
 
@@ -33,59 +34,64 @@ public class ADao {
         return dao;
     }
 
-    // 회원가입 
-    // 회원가입 
-    public void joinMember(AMember vo) {
+    // 회원가입
+    public int joinMember(AMember vo) {
         Connection con = null;
-        PreparedStatement ps = null;
+        PreparedStatement ps1 = null, ps2 = null;
         ResultSet rs = null;
-        String res = null;
-        
+        int i = 0;
         try {
             con = TestConn.getConn();
+            String res = "select mid from amember where mid = ?";
+            ps1 = con.prepareStatement(res);
+            ps1.setString(1, vo.getMid());
+            rs = ps1.executeQuery();
+            while(rs.next()){
+                if(rs.getString("mid").equals(vo.getMid())){
+                    i = 1;
+                }
+            }
+            if(i == 0){
             String query = "insert into AMember values(membernum_seq.nextVal,?,?,?,?,?,?,sysdate,usergender(?))";
-            ps = con.prepareStatement(query);
-            ps.setString(1, vo.getMid());
-            ps.setString(2, vo.getMpwd());
-            ps.setString(3, vo.getMname());
-            ps.setString(4, vo.getMloc());
-            ps.setInt(5, vo.getMhobby());
-            ps.setString(6, vo.getMjumin());
-            ps.setString(7, vo.getMjumin());
-            ps.executeUpdate();
+            ps2 = con.prepareStatement(query);
+            ps2.setString(1, vo.getMid());
+            ps2.setString(2, vo.getMpwd());
+            ps2.setString(3, vo.getMname());
+            ps2.setString(4, vo.getMloc());
+            ps2.setInt(5, vo.getMhobby());
+            ps2.setString(6, vo.getMjumin());
+            ps2.setString(7, vo.getMjumin());
+            ps2.executeUpdate();
             System.out.println("가입 완료!");
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+                if (rs != null) rs.close();
+                if (ps1 != null) ps1.close();
+                if (ps2 != null) ps2.close();
+                if (con != null) con.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
+        return i;
     }
+    
     //로그인
     public AMember login(AMember vo, String id) {
-
         Connection con = null;
-        PreparedStatement ps = null;
+        CallableStatement cs = null;
         ResultSet rs = null;
         try {
-
             con = TestConn.getConn();
-            String query = "select membernum,mid,mpwd,mname,mloc,mjumin,mhobby,mdate,usergender(mjumin) as gender from AMember where mid = ?";
-            ps = con.prepareStatement(query);
-            ps.setString(1, id);
-            rs = ps.executeQuery();
-
+            String query = "begin userprofile(?,?); end;";
+            cs = con.prepareCall(query);
+            cs.setString(1, id);
+            cs.registerOutParameter(2, OracleTypes.CURSOR);
+            cs.execute();
+            rs = (ResultSet) cs.getObject(2);
             if (rs.next()) {
                 vo.setMembernum(rs.getInt("membernum"));
                 vo.setMid(rs.getString("mid"));
@@ -96,25 +102,56 @@ public class ADao {
                 vo.setMhobby(rs.getInt("mhobby"));
                 vo.setMdate(rs.getString("mdate"));
                 vo.setMjumin(rs.getString("gender"));
+                Hobby h = new Hobby();
+                h.setHname(rs.getString("hname"));
+                vo.setHobby(h);
+                vo.setJoindate(rs.getString("fj"));
             }
             System.out.println("로그인 성공");
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-
             try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+                if(rs!=null) rs.close();
+                if (cs != null) cs.close();
+                if (con != null) con.close();
             } catch (SQLException ex) {
-                Logger.getLogger(ADao.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
-
         return vo;
+    }
+    
+    // 로그인 시 ID 중복체크
+    public boolean chkUsedId(String mid){
+            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select count(mid) cnt from amember where mid = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, mid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                 System.out.println(rs.getInt("cnt"));
+                int cnt = rs.getInt("cnt");
+                if(cnt > 0){
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+                try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
     }
 
     //로그인id - pwd 체크
@@ -124,17 +161,13 @@ public class ADao {
         ResultSet rs = null;
         int i = 0;
         try {
-
             con = TestConn.getConn();
             String query = "select mpwd from AMember where mid = ?";
             ps = con.prepareStatement(query);
             ps.setString(1, id);
-
             rs = ps.executeQuery();
-
             if (rs.next()) {
                 if (rs.getString("mpwd").equals(pwd)) {
-
                     System.out.println("로그인 성공");
                     return 1;
                 } else {
@@ -143,40 +176,30 @@ public class ADao {
                 return 0;
             }
             return -1;
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-
             try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+                if (ps != null) ps.close();
+                if (con != null) con.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-
         return i;
     }
 
     public void addGroup(AMember ref, AGroup ref2) {
         Connection con = null;
-        
-        PreparedStatement ps1 = null, ps2 = null, ps3=null;
+        PreparedStatement ps1 = null, ps2 = null, ps3 = null;
 
         //그룹만들기
         String path = "insert into Agroup values(groupnum_seq.nextVal,?,?,?,?,sysdate)";
         String path2 = "insert into Ajoin values(?,groupnum_seq.currVal,sysdate,1)";
-        String path3 = "insert into chat values(groupnum_seq.currVal,sysdate)";
         try {
             con = TestConn.getConn();
             con.setAutoCommit(false);
             ps1 = con.prepareStatement(path);
-            
             ps1.setString(1, ref2.getGname());
             ps1.setInt(2, ref.getMhobby());
             ps1.setString(3, ref.getMloc());
@@ -185,37 +208,59 @@ public class ADao {
             ps2=con.prepareStatement(path2);
             ps2.setInt(1, ref.getMembernum());
             ps2.executeUpdate();
-            ps3 = con.prepareStatement(path3);
-            ps3.executeUpdate();
             System.out.println("그룹 생성 완료!");
             con.commit();
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             try {
-                if (ps2 != null) {
-                    ps2.close();
-                }
-                if (ps1 != null) {
-                    ps1.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+                if (ps2 != null) ps2.close();
+                if (ps1 != null) ps1.close();
+                if (con != null) con.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
     }
  
-         
+    public boolean chkUsedGroupNm(String gname){
+            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select count(gname) cnt from agroup where gname = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, gname);
+            rs = ps.executeQuery();
+             
+             if (rs.next()) {
+                 System.out.println(rs.getInt("cnt"));
+                int cnt = rs.getInt("cnt");
+                if(cnt > 0){
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+                try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+    
     //메인페이지 모임 리스트
     public ArrayList<AGroup> groupList(AMember ref) {
         ArrayList<AGroup> alist = new ArrayList<>();
         Connection con = null;
         CallableStatement cs = null;
         ResultSet rs = null;
-
         try {
             con = TestConn.getConn();
             String sql = "begin glist(?,?); end; ";
@@ -226,51 +271,56 @@ public class ADao {
             rs = (ResultSet) cs.getObject(2);
             while(rs.next()){
                 AGroup a = new AGroup();
+                Hobby h = new Hobby();
                 a.setGroupnum(rs.getInt("groupnum"));
                 a.setGdate(rs.getNString("gdate"));
                 a.setGhobby(rs.getInt("ghobby"));
                 a.setGinfo(rs.getString("ginfo"));
                 a.setGname(rs.getNString("gname"));
                 a.setGloc(rs.getString("gloc"));
+                h.setHname(rs.getString("hname"));
+                a.setHobby(h);
                 alist.add(a);
             }
         } catch (SQLException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         } finally{
             try {
                 if(rs!=null) rs.close();
                 if(cs!=null) cs.close();
                 if(con!=null) con.close();
             } catch (SQLException ex) {
-                Logger.getLogger(ADao.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
-
         return alist;
     }
+    
     //모임검색하기
     public ArrayList<AGroup> detailGroup(String gname){
-        
         ArrayList<AGroup> alist = new ArrayList<AGroup>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String path = "select gname,ghobby,gloc,groupnum from AGroup where gname like '%'||?||'%' ";
-        
+        String path = "select g.gname,g.ghobby,g.gloc,g.groupnum,g.ginfo,h.hname from AGroup g, hobby h where g.ghobby = h.hobbynum and( gname like '%'||?||'%' or ginfo like '%'||?||'%' )";
         try {
             con = TestConn.getConn();
             ps = con.prepareStatement(path);
             ps.setString(1,gname);
+            ps.setString(2, gname);
             rs = ps.executeQuery();
             while(rs.next()){
-             AGroup a = new AGroup();
+            AGroup a = new AGroup();
+            Hobby b = new Hobby();
                 a.setGname(rs.getString("gname"));
                 a.setGhobby(rs.getInt("ghobby"));
                 a.setGloc(rs.getString("gloc"));
+                a.setGinfo(rs.getString("ginfo"));
                 a.setGroupnum(rs.getInt("groupnum"));
+                b.setHname(rs.getString("hname"));
+                a.setHobby(b);
                 alist.add(a);
             }
-            
         } catch (SQLException ex) {
             ex.printStackTrace();
         }finally{
@@ -285,32 +335,7 @@ public class ADao {
      return alist;
        
     }
-    //모임가입
-    public void join(AMember mem,AGroup group) { // loginUserInfo - iuinInfo // contected Group - conGroup
-        Connection con = null;
-        PreparedStatement ps = null;
-        String path = "insert into aJoin values(?,?,sysdate,f10(?))";
-        try {
-            con = TestConn.getConn(); 
-            ps = con.prepareStatement(path);
-            ps.setInt(1, mem.getMembernum());
-            ps.setInt(2, group.getGroupnum());
-            ps.setInt(3, group.getGroupnum());
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }finally{
-            try{
-                if(ps != null)ps.close();
-                if(con != null)con.close();
-                    
-                
-            }catch(SQLException ex){
-                ex.printStackTrace();
-                        
-            }
-        }
-    }
+
         //모임 번호 입력후 버튼 클릭 후 모임페이지에 대한 
         //상세 정보를  가져오는 Dao 
         public AGroup EnterGroup(AGroup a) {
@@ -339,12 +364,12 @@ public class ADao {
                 if(ps!=null) ps.close();
                 if(con!=null) con.close();
             } catch (SQLException ex) {
-                 ex.printStackTrace();
+                ex.printStackTrace();
             }
         }
         return a;
-
         }
+        
         // 모임내 가입한 멤버 내역
         public ArrayList<AJoin> listGroup(int num) {
            ArrayList<AJoin> alist = new ArrayList<>();
@@ -362,13 +387,13 @@ public class ADao {
             rs = (ResultSet) cs.getObject(2);
             while(rs.next()){
                 AJoin ajoin = new AJoin();
-                ajoin.setGroupnum(rs.getInt("membernum"));
-                ajoin.setMembernum(rs.getInt("groupnum"));
+                ajoin.setGroupnum(rs.getInt("groupnum"));
+                ajoin.setMembernum(rs.getInt("membernum"));
                 ajoin.setJdate(rs.getString("jdate"));
-               
+                
                 AMember member = new AMember();
                 member.setMname(rs.getString("mname"));
-                
+                member.setMgender(rs.getString("gender"));
                 
                 AGroup group = new AGroup();
                 group.setGname(rs.getString("gname"));
@@ -376,60 +401,74 @@ public class ADao {
                 ajoin.setAmember(member);
                 ajoin.setAgroup(group);
                 alist.add(ajoin);
-                
                 //j.groupnum,m.mname,g.gname
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ADao.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } finally{
             try {
                 if(rs!=null) rs.close();
                 if(cs!=null) cs.close();
                 if(con!=null) con.close();
             } catch (SQLException ex) {
-                Logger.getLogger(ADao.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
-            
         }
             return alist;
         } 
+        
         // 나의 정보 수정(지역 및 취미)
         public void updateMyInfo(AMember ref, String mloc, int mhobby){
             Connection con = null;
             PreparedStatement ps = null; 
-            
+            CallableStatement cs = null;
+            ResultSet rs = null;
         try {
             con = TestConn.getConn();
+            con.setAutoCommit(false);
             String sql = "update amember set mloc = ?, mhobby = ? where mid = ?";
             ps = con.prepareStatement(sql);
             ps.setString(1, mloc);
             ps.setInt(2, mhobby);
             ps.setString(3, ref.getMid());
             ps.executeUpdate();
+            String sql2 = "begin userprofile(?,?); end;";
+            cs= con.prepareCall(sql2);
+            cs.setString(1, ref.getMid());
+            cs.registerOutParameter(2, OracleTypes.CURSOR);
+            cs.execute();
+            rs = (ResultSet) cs.getObject(2);
+            if(rs.next()){
+            Hobby h = new Hobby();
+            h.setHname(rs.getString("hname"));
+            ref.setJoindate(rs.getString("fj"));
+            ref.setHobby(h);
+            }
             // 현재 세션의 로그인 정보도 수정
             ref.setMloc(mloc);
             ref.setMhobby(mhobby);
-            
+            con.commit();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }finally{
             try {
+                if(rs!=null) rs.close();
+                if(cs!=null) cs.close();
                 if(ps!=null) ps.close();
                 if(con!=null) con.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-            
         }
+        
         // 내가 가입한 모임 리스트 가져오기
         public ArrayList<AJoin> listMyGroup(int num) {
-           ArrayList<AJoin> alist = new ArrayList<>();
-            
+            ArrayList<AJoin> alist = new ArrayList<>();
             Connection con = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
-            String sql = "select g.gname, g.gloc, g.ghobby, j.jdate from agroup g, ajoin j where g.groupnum = j.groupnum and j.membernum =?";
+            String sql = "select g.groupnum,g.gname, g.gloc, g.ghobby, j.jdate,h.hname from agroup g, ajoin j,hobby h where g.groupnum = j.groupnum and g.ghobby = h.hobbynum and j.membernum =?";
         try {
             con = TestConn.getConn();
             ps = con.prepareStatement(sql);
@@ -439,15 +478,16 @@ public class ADao {
             while(rs.next()){
                 AJoin ajoin = new AJoin();
                 ajoin.setJdate(rs.getString("jdate"));
-
                 AGroup group = new AGroup();
+                group.setGroupnum(rs.getInt("groupnum"));
                 group.setGname(rs.getString("gname"));
                 group.setGloc(rs.getString("gloc"));
                 group.setGhobby(rs.getInt("ghobby"));
-                
+                Hobby h = new Hobby();
+                h.setHname(rs.getString("hname"));
+                group.setHobby(h);
                 ajoin.setAgroup(group);
                 alist.add(ajoin);
-                
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -459,15 +499,15 @@ public class ADao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            
         }
             return alist;
         } 
+
         // 게시글 작성 -병렬
         public void addBoard(Board b,AJoin aj){
             Connection con = null;
             PreparedStatement ps = null;
-            String sql = "insert into board values(board_seq.nextVal,?,?,?,?,sysdate,f11(?))";
+            String sql = "insert into board values(board_seq.nextVal,?,?,?,?,sysdate,getWlist(?))";
         try {
             con = TestConn.getConn();
             ps = con.prepareStatement(sql);
@@ -486,11 +526,9 @@ public class ADao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            
+        }   
         }
-            
-            
-        }
+        
         // 게시글 출력 - 병렬
         public ArrayList<Board> listBoard(AGroup group){
             Connection con = null;
@@ -520,14 +558,13 @@ public class ADao {
                 if(rs != null) rs.close();
                 if(ps != null)  ps.close();
                 if(con != null) con.close();
-                
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            
         }
         return arlist;
         }
+        
     // 상세 게시글 보기
     public Board getDetailBoard(Board a) {
         Connection con = null;
@@ -535,13 +572,14 @@ public class ADao {
         ResultSet rs = null;
         try {
             con = TestConn.getConn();
-            String sql ="select b.wlist,b.subject,a.mname,b.content from board b, amember a where b.membernum = a.membernum and b.boardnum = ?";
+            String sql ="select b.boardnum,b.wlist,b.subject,a.mname,b.content from board b, amember a where b.membernum = a.membernum and b.wlist = ?";
             ps = con.prepareStatement(sql);
-            ps.setInt(1, a.getBoardnum());
+            ps.setInt(1, a.getWlist());
             rs = ps.executeQuery();
            
             if (rs.next()) {
-                a.setBoardnum(rs.getInt("wlist"));
+                a.setBoardnum(rs.getInt("boardnum"));
+                a.setWlist(rs.getInt("wlist"));
                 a.setSubject(rs.getString("subject"));
                 AMember b = new AMember();
                 b.setMname(rs.getString("mname"));
@@ -552,23 +590,17 @@ public class ADao {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-
             try {
-                if (rs != null){
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
         return a;
     } 
+    
     //댓글출력하기 - 김훈민
      public ArrayList<BoardComm> getDetailBoardComm(BoardComm bc) {
         Connection con = null;
@@ -607,8 +639,6 @@ public class ADao {
         return alist;
     } 
     
-    
-    
     //댓글내용저장하기 - 김훈민
       public void addComment(BoardComm bc,AJoin aj){
             Connection con = null;
@@ -631,7 +661,8 @@ public class ADao {
                 ex.printStackTrace();
             }
         }
-      }  
+      }
+      
       public void deleteMyMoim(AJoin a){
             //내가 가입한 모임을 탈퇴
             Connection con = null;
@@ -660,8 +691,8 @@ public class ADao {
                 ex.printStackTrace();
             }
         }
-            
-        }
+    }
+      
       public ArrayList<AGroup> selectGroupHobby(int num) {
             //검색한 취미를 관심사로 가지는 모임리스트 가져오기
             ArrayList<AGroup> alist = new ArrayList<>();
@@ -669,7 +700,7 @@ public class ADao {
             Connection con = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
-            String sql = "select groupnum, gname, ghobby, gloc from agroup  where ghobby = ?";
+            String sql = "select g.groupnum, g.gname, g.ghobby, g.gloc,g.ginfo, h.hname from agroup g,hobby h  where  g.ghobby = h.hobbynum and ghobby = ?";
         try {
             con = TestConn.getConn();
             ps = con.prepareStatement(sql);
@@ -678,13 +709,15 @@ public class ADao {
             
             while(rs.next()){
                 AGroup group = new AGroup();
+                Hobby h = new Hobby();
                 group.setGroupnum(rs.getInt("groupnum"));
                 group.setGname(rs.getString("gname"));
+                group.setGinfo(rs.getString("ginfo"));
                 group.setGhobby(rs.getInt("ghobby"));
                 group.setGloc(rs.getString("gloc"));
-
+                h.setHname(rs.getString("hname"));
+                group.setHobby(h);
                 alist.add(group);
-                
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -696,10 +729,403 @@ public class ADao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            
         }
             return alist;
         }
+      
+    // 가입 리스트
+    public int ckGjlist(AJoin aj){
+          Connection con = null;
+          CallableStatement cs = null;
+          ResultSet rs = null;
+          String sql = "begin ckgjlist(?,?); end; ";
+        try {
+            con = TestConn.getConn();
+            cs = con.prepareCall(sql);
+            cs.setInt(1, aj.getAgroup().getGroupnum());
+            cs.registerOutParameter(2, OracleTypes.CURSOR);
+            cs.execute();
+            rs=(ResultSet) cs.getObject(2);
+            while(rs.next()){
+                if(rs.getInt("membernum")==aj.getAmember().getMembernum()){
+                    return 1;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally{
+              try {
+                  if(rs != null) rs.close();
+                  if(cs != null) cs.close();
+                  if(con != null) con.close();
+              } catch (SQLException ex) {
+                  ex.printStackTrace();
+              }
+        }
+          return 0;
+      }
+      
+      // 가입 신청했는지 여부
+      public int ckJoinDelay(AJoin aj){
+        Connection con = null;
+        CallableStatement cs = null, cs2 =null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "begin ckJoinDelay(?,?); end;";
+            cs = con.prepareCall(sql);
+            cs.setInt(1, aj.getAgroup().getGroupnum());
+            cs.registerOutParameter(2, OracleTypes.CURSOR);
+            cs.execute();
+            rs = (ResultSet) cs.getObject(2);
+            while(rs.next()){
+                if(rs.getInt("membernum")==aj.getAmember().getMembernum()){
+                return 0;
+                }
+            }
+            String sql2 = "begin ckJoinDelay2(?,?); end;";      
+            cs2 = con.prepareCall(sql2);
+            cs2.setInt(1, aj.getAgroup().getGroupnum());
+            cs2.registerOutParameter(2, OracleTypes.CURSOR);
+            cs2.execute();
+            rs = (ResultSet) cs2.getObject(2);
+            while(rs.next()){
+                if(rs.getInt("membernum")==aj.getAmember().getMembernum()){
+                return -1;
+                }    
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace();
+            }
+            
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(cs!=null) cs.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            
+        }          
+         return 1;
+      }
+      
+      //가입신청
+      public void joinDelay(AJoin aj){
+          Connection con = null;
+          CallableStatement cs = null;
+          String sql= "begin join_pkg.joindelay(?,?); end;";
+        try {
+            con = TestConn.getConn();
+            cs = con.prepareCall(sql);
+            cs.setInt(1, aj.getAmember().getMembernum());
+            cs.setInt(2, aj.getAgroup().getGroupnum());
+            cs.execute();
+        } catch (SQLException ex) {
+              try {
+                  con.rollback();
+              } catch (SQLException ex1) {
+                  ex1.printStackTrace();
+              }
+                ex.printStackTrace();
+        } finally{
+            try{
+                if(cs != null)cs.close();
+                if(con != null)con.close();
+           }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+      
+    //가입수락  
+    public void acceptJoin(AJoin aj) { // loginUserInfo - iuinInfo // contected Group - conGroup
+        Connection con = null;
+        CallableStatement cs = null;
+        String path = "begin join_pkg.accetjoin(?,?); end; ";
+        try {
+            con = TestConn.getConn(); 
+            cs = con.prepareCall(path);
+            cs.setInt(1, aj.getAmember().getMembernum());
+            cs.setInt(2, aj.getAgroup().getGroupnum());
+            cs.executeUpdate();
+        } catch (SQLException ex) {
+           try {
+                ex.printStackTrace();
+                con.rollback();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace();
+            }
+        }finally{
+            try{
+                if(cs != null)cs.close();
+                if(con != null)con.close();
+           }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    // 신청자 정보 얻어오기
+    public AJoin getAplicantInfo(int mnum){
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        AJoin aj = new AJoin();
+        try {
+            con = TestConn.getConn();
+            String sql = "select membernum, groupnum from ajoin_delay where membernum = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, mnum);
+            rs = ps.executeQuery();
+            if(rs.next()){
+            AMember mem = new AMember();
+            AGroup a = new AGroup();
+            mem.setMembernum(rs.getInt("membernum"));
+            a.setGroupnum(rs.getInt("groupnum"));
+            aj.setAmember(mem);
+            aj.setAgroup(a);
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+            
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            
+        }
+        return aj;
+    }
+    
+    //그룹 존재여부
+    public int ckGroup(AGroup g){
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select groupnum from gview";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while(rs.next()){
+                if(rs.getInt("groupnum")==g.getGroupnum()){
+                return 1;
+                }
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+            
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            
+        }
+        return 0;
+    
+    }
+    
+    //모임 신청 거절
+    public void denyJoin(AJoin aj){
+        Connection con = null;
+        CallableStatement cs = null;
+        String path = "begin join_pkg.denyjoin(?,?); end; ";
+        try {
+            con = TestConn.getConn(); 
+            cs = con.prepareCall(path);
+            cs.setInt(1, aj.getAmember().getMembernum());
+            cs.setInt(2, aj.getAgroup().getGroupnum());
+            cs.executeUpdate();
+        } catch (SQLException ex) {
+           try {
+                 ex.printStackTrace();
+                con.rollback();
+            } catch (SQLException ex1) {
+                ex1.printStackTrace();
+            }
+        }finally{
+            try{
+                if(cs != null)cs.close();
+                if(con != null)con.close();
+           }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+        }    
+    }
+    
+    // 모임장 여부 체크
+    public int ckMoimjang(AJoin aj){
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select membernum from ajoin where joinmember =1 and groupnum = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, aj.getAgroup().getGroupnum());
+            rs = ps.executeQuery();
+            if(rs.next()){
+                if(rs.getInt("membernum")==aj.getAmember().getMembernum()){
+                return 1;
+                }
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+            
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            
+        }
+    return 0;
+    }
+    
+    // 신청자 목록
+    public ArrayList<AMember> getApplicantList(AGroup a){
+        ArrayList<AMember> alist = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select m.membernum,m.mid,m.mname,getage(m.mjumin) age,m.gender,m.mloc from amember m, ajoin_delay d where m.membernum = d.membernum and d.groupnum = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, a.getGroupnum());
+            rs = ps.executeQuery();
+            while(rs.next()){
+            AMember mem = new AMember();
+            mem.setMembernum(rs.getInt("membernum"));
+            mem.setMid(rs.getString("mid"));
+            mem.setMname(rs.getString("mname"));
+            mem.setAge(rs.getInt("age"));
+            mem.setMgender(rs.getString("gender"));
+            mem.setMloc(rs.getString("mloc"));
+            alist.add(mem);
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+            
+        } finally{
+            try {
+                if(rs!=null) rs.close();
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return alist;
+    }
+    
+    // 모임에서 추방
+     public int kickPpl(AJoin aj){
+        Connection con = null;
+        PreparedStatement ps = null, ps2 =null;
+        ResultSet rs = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "select membernum from ajoin where groupnum = ? and joinmember = 1";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, aj.getAgroup().getGroupnum());
+            rs = ps.executeQuery();
+            int a = 0;
+            while(rs.next()){
+                if(rs.getInt("membernum") == aj.getAmember().getMembernum()){
+                    a=1;
+                }
+            }
+            if(a==0){
+            String sql2 = "delete from ajoin where groupnum = ? and membernum = ?";
+            ps2 = con.prepareStatement(sql2);
+            ps2.setInt(1, aj.getAgroup().getGroupnum());
+            ps2.setInt(2, aj.getAmember().getMembernum());
+            ps2.executeUpdate();
+            return 1;
+            }
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+        } finally{
+            try {
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return 0;
+    }
+    
+    // 모임 소개글 변경
+    public void changeGinfo(AGroup g){
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = TestConn.getConn();
+            String sql = "update agroup set ginfo = ? where groupnum = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(2, g.getGroupnum());
+            ps.setString(1, g.getGinfo());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            try {
+                con.rollback();
+                ex.printStackTrace();
+            } catch (SQLException ex1) {
+                 ex1.printStackTrace();
+            }
+        } finally{
+            try {
+                if(ps!=null) ps.close();
+                if(con!=null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }
 
     

@@ -1,13 +1,21 @@
 package front;
-//다시한번 실습해봅니디ㅏ
+
+import Chat.Cat;
+import Chat.Dog;
+import Chat.Wolf;
+import dao.ADao;
 import dto.AGroup;
 import dto.AJoin;
 import model.Model;
 import dto.AMember;
 import dto.Board;
 import dto.BoardComm;
+import dto.Hobby;
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -33,32 +41,61 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         card = (CardLayout) pp.getLayout();
         md = new Model();
         loginImgRandom();
-
     }
     
-    //로그인 화면 랜덤 이미지 show
+        //로그인 화면 랜덤 이미지 show
     public void loginImgRandom(){
             new Thread(new Runnable() {
+            int ck;
             @Override
             public void run() {
                 try {
-                    while(true) {
-                    imgSrc.setText(null);
+                    loginBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                           String id = log_id.getText();
+                           String pwd = log_pwd.getText();
+                           ck = md.checkIdMd(id, pwd);
+                        }
+                    });
+                    while(ck!=1) {
                     int a = (int) (Math.random()*5)+1;
-                    imgSrc.setIcon(new javax.swing.ImageIcon(getClass().getResource("/front/img/hobby"+a+".png")));
-                    Thread.sleep(1500); 
-                    }
-                } catch (InterruptedException ex) {
+                    show_hobby.setIcon(new javax.swing.ImageIcon(getClass().getResource("/front/img/hobby"+a+".png")));
+                    Thread.sleep(1500);
+                     }
+               } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
             }
         }).start();     
     }
-    // 메인페이지 이미지 show
+    
+        // 메인페이지 이미지 show
     public void mainImgShow(int num){
        String hname[] = {"아웃도어/여행", "운동/스포츠", "사진/영상", "게임/오락", "요리/제조"};
        main_img.setText("내가 선택한 취미는 "+hname[num-1]+"입니다.");
        main_img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/front/img/hobby"+num+".png")));
+    }
+    
+    //모임장페이지 가입 신청목록
+    public void getApplicantList(ArrayList<AMember> alist){
+    
+    String[] colums = {"회원번호","아이디","이름","나이","성별","지역"};
+    Object[][] data = new Object[alist.size()][];
+    int i = 0;
+    for(AMember e : alist){
+        data[i] =  new Object[6];
+        data[i][0] = e.getMembernum();
+        data[i][1] = e.getMid();
+        data[i][2] =e.getMname();
+        data[i][3] =e.getAge();
+        data[i][4] =e.getMgender();
+        data[i][5] =e.getMloc();
+        i++;
+    }
+    MyTable m1 = new MyTable(colums, data);
+    p11_joinTable.setModel(m1);
+    
     }
     
     //채팅 연결
@@ -67,12 +104,19 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         try {
             s= new Socket("localhost",9999);
             pw = new PrintWriter(s.getOutputStream(), true);
-            pw.println("바보/"+group.getGroupnum()+"/바보/바보");
+            pw.println("welcome/"+group.getGroupnum()+"/"+mem.getMid()+"/msg");
              new Thread(new Runnable() {
                 BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                int ck;
                 @Override
                 public void run() {
-                    while(true){
+                    chating_pageBtn2.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                          ck = 1;
+                        }
+                    });
+                    while(ck!=1){
                         try {
                             String msg = br.readLine();
                             System.out.println(msg);
@@ -80,15 +124,12 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                         } catch (IOException ex) {
                             Logger.getLogger(Asemi_ui_1.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                      
-                        
                     }
                 }
             }).start();
             card.show(pp, "c7");
-                 
-        } catch (IOException ex) {
-            Logger.getLogger(Asemi_ui_1.class.getName()).log(Level.SEVERE, null, ex);
+         } catch (IOException ex) {
+            ex.printStackTrace();
         }
         
     }
@@ -96,15 +137,16 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     //메인페이지 그룹 리스트 jtable 메서드
     public void groupList(ArrayList<AGroup> b) {
         ArrayList<AGroup> a = b;
-        String[] columnNames = {"모임번호", "이름","취미","지역"};
+        String[] columnNames = {"모임번호", "이름","소개글","취미","지역"};
         Object[][] data = new Object[a.size()][];
         int i = 0;
         for(AGroup e : a){
-            data[i] = new Object[4];
+            data[i] = new Object[5];
             data[i][0] = e.getGroupnum();
             data[i][1] = e.getGname();
-            data[i][2] = e.getGhobby();
-            data[i][3] = e.getGloc();
+            data[i][2] = e.getGinfo();
+            data[i][3] = e.getHobby().getHname();
+            data[i][4] = e.getGloc();
             i++;
         }
         MyTable mt = new MyTable(columnNames, data);
@@ -113,32 +155,35 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     //모임에 가입된 회원 모임 내 리스트 jtable 메서드
          public void groupdetailList(ArrayList<AJoin> b) {
         ArrayList<AJoin> a = b;
-        String[] columnNames = {"이름", "성별"};
+        String[] columnNames = {"회원번호","이름", "성별","가입일"};
         Object[][] data = new Object[a.size()][];
         int i = 0;
         for(AJoin e : a){
-            data[i] = new Object[2];
-            data[i][0] = e.getAmember().getMname();
-            data[i][1] = e.getAgroup().getGdate();
-           
+            data[i] = new Object[4];
+            data[i][0] = e.getMembernum();
+            data[i][1] = e.getAmember().getMname();
+            data[i][2] = e.getAmember().getMgender();
+            data[i][3] = e.getJdate();
             i++;
         }
         MyTable mt = new MyTable(columnNames, data);
         moimlist.setModel(mt);
+        p11_delTable.setModel(mt);
     }
          
          // 내가 가입한 모임 리스트 표에 출력
         public void myGroupList(ArrayList<AJoin> b) {
         ArrayList<AJoin> a = b;
-        String[] columnNames = {"모임 이름", "모임 지역", "취미 번호", "가입 일자"};
+        String[] columnNames = {"그룹번호","모임 이름", "모임 지역", "취미 번호", "가입 일자"};
         Object[][] data = new Object[a.size()][];
         int i = 0;
         for(AJoin e : a){
-            data[i] = new Object[4];
-            data[i][0] = e.getAgroup().getGname();
-            data[i][1] = e.getAgroup().getGloc();
-            data[i][2] = e.getAgroup().getGhobby();
-            data[i][3] = e.getJdate();
+            data[i] = new Object[5];
+            data[i][0] = e.getAgroup().getGroupnum();            
+            data[i][1] = e.getAgroup().getGname();
+            data[i][2] = e.getAgroup().getGloc();
+            data[i][3] = e.getAgroup().getHobby().getHname();
+            data[i][4] = e.getJdate();
             i++;
         }
         MyTable mt = new MyTable(columnNames, data);
@@ -193,7 +238,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         log_pwd = new javax.swing.JTextField();
         loginBtn = new javax.swing.JButton();
         joinBtn = new javax.swing.JButton();
-        imgSrc = new javax.swing.JLabel();
+        show_hobby = new javax.swing.JLabel();
         p2_adduser = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -212,6 +257,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         jumin_front = new javax.swing.JTextField();
         jumin_behind = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
+        chkUsedId = new javax.swing.JButton();
         p3_createmoim = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
@@ -219,11 +265,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         cmoim_name = new javax.swing.JTextField();
         cmoim_info = new javax.swing.JTextField();
         cmoimBtn = new javax.swing.JButton();
-        jLabel17 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jLabel21 = new javax.swing.JLabel();
         main_page_Btn2 = new javax.swing.JButton();
+        chkUsedGroupNm = new javax.swing.JButton();
         p4_mainpanal = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         searchword = new javax.swing.JTextField();
@@ -276,6 +319,9 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         chating_pageBtn2 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         chatScreen = new javax.swing.JTextArea();
+        p7_dogBtn = new javax.swing.JButton();
+        p7_catBtn = new javax.swing.JButton();
+        p7_wolfBtn = new javax.swing.JButton();
         p8_createdocument_Panal = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         addBoardBtn = new javax.swing.JButton();
@@ -316,6 +362,24 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         jLabel30 = new javax.swing.JLabel();
         moimnum_v = new javax.swing.JTextField();
         moim_delete_Btn = new javax.swing.JButton();
+        p10_time_v = new javax.swing.JLabel();
+        jLabel38 = new javax.swing.JLabel();
+        p11_moimjang = new javax.swing.JPanel();
+        jLabel32 = new javax.swing.JLabel();
+        p11_infoBtn = new javax.swing.JButton();
+        p11_joinBtn = new javax.swing.JButton();
+        p11_deleteBtn = new javax.swing.JButton();
+        moinBtn = new javax.swing.JButton();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        p11_info = new javax.swing.JTextArea();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        p11_joinTable = new javax.swing.JTable();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        p11_delTable = new javax.swing.JTable();
+        p11_join_v = new javax.swing.JTextField();
+        p11_del_v = new javax.swing.JTextField();
+        p11_deny_v = new javax.swing.JTextField();
+        p11_denyBtn = new javax.swing.JButton();
 
         jLabel7.setText("jLabel7");
 
@@ -346,59 +410,60 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        imgSrc.setText("imgSrc");
-
         javax.swing.GroupLayout p1_loginLayout = new javax.swing.GroupLayout(p1_login);
         p1_login.setLayout(p1_loginLayout);
         p1_loginLayout.setHorizontalGroup(
             p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p1_loginLayout.createSequentialGroup()
-                .addContainerGap(722, Short.MAX_VALUE)
-                .addComponent(imgSrc)
-                .addGap(304, 304, 304))
             .addGroup(p1_loginLayout.createSequentialGroup()
                 .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(p1_loginLayout.createSequentialGroup()
-                        .addGap(144, 144, 144)
-                        .addComponent(loginBtn)
-                        .addGap(18, 18, 18)
-                        .addComponent(joinBtn))
                     .addGroup(p1_loginLayout.createSequentialGroup()
                         .addGap(153, 153, 153)
                         .addComponent(jLabel11))
                     .addGroup(p1_loginLayout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(p1_loginLayout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(log_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(72, 72, 72)
+                                .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(p1_loginLayout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(log_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(p1_loginLayout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(30, 30, 30)
+                                        .addComponent(log_id, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(p1_loginLayout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(30, 30, 30)
-                                .addComponent(log_id, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(144, 144, 144)
+                                .addComponent(loginBtn)
+                                .addGap(18, 18, 18)
+                                .addComponent(joinBtn)))
+                        .addGap(123, 123, 123)
+                        .addComponent(show_hobby, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(321, Short.MAX_VALUE))
         );
         p1_loginLayout.setVerticalGroup(
             p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p1_loginLayout.createSequentialGroup()
                 .addGap(47, 47, 47)
                 .addComponent(jLabel11)
-                .addGap(67, 67, 67)
-                .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(log_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(log_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37)
-                .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(loginBtn)
-                    .addComponent(joinBtn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(imgSrc)
-                .addContainerGap(429, Short.MAX_VALUE))
+                .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(p1_loginLayout.createSequentialGroup()
+                        .addGap(67, 67, 67)
+                        .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(log_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(log_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(37, 37, 37)
+                        .addGroup(p1_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(loginBtn)
+                            .addComponent(joinBtn)))
+                    .addGroup(p1_loginLayout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(show_hobby, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(369, Short.MAX_VALUE))
         );
 
         pp.add(p1_login, "c1");
@@ -432,13 +497,20 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         join_locCom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "서울", "경기", "인천", "그외" }));
 
-        join_hobbyCom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "취미1", "취미2", "취미3", "취미4", "취미5" }));
+        join_hobbyCom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "아웃도어/여행", "운동/스포츠", "사진/영상", "게임/오락", "요리/제조" }));
 
         jLabel22.setText(" 이름 : ");
 
         jLabel23.setText("주민번호 : ");
 
         jLabel24.setText("-");
+
+        chkUsedId.setText("ID 중복체크");
+        chkUsedId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkUsedIdActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout p2_adduserLayout = new javax.swing.GroupLayout(p2_adduser);
         p2_adduser.setLayout(p2_adduserLayout);
@@ -479,7 +551,9 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addGap(18, 18, 18)
                             .addComponent(join_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(199, 199, 199)
+                .addGap(18, 18, 18)
+                .addComponent(chkUsedId)
+                .addGap(104, 104, 104)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
                     .addComponent(jLabel20))
@@ -487,19 +561,20 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(join_hobbyCom, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(join_locCom, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(383, Short.MAX_VALUE))
+                .addContainerGap(365, Short.MAX_VALUE))
         );
         p2_adduserLayout.setVerticalGroup(
             p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(p2_adduserLayout.createSequentialGroup()
                 .addGap(45, 45, 45)
                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
+                .addGap(41, 41, 41)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(join_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(join_locCom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(join_locCom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkUsedId))
                 .addGap(18, 18, 18)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -516,7 +591,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(jumin_front, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jumin_behind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel24))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 283, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 295, Short.MAX_VALUE)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nextBtn)
                     .addComponent(prevBtn))
@@ -542,18 +617,17 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        jLabel17.setText("관심사 설정 : ");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "취미1", "취미2", "취미3", "취미4", "취미5" }));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "서울", "경기", "인천", "그 외" }));
-
-        jLabel21.setText("지역 설정 : ");
-
         main_page_Btn2.setText("이전 화면으로");
         main_page_Btn2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 main_page_Btn2ActionPerformed(evt);
+            }
+        });
+
+        chkUsedGroupNm.setText("모임명 중복 확인");
+        chkUsedGroupNm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkUsedGroupNmActionPerformed(evt);
             }
         });
 
@@ -580,16 +654,9 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                             .addGroup(p3_createmoimLayout.createSequentialGroup()
                                 .addGap(140, 140, 140)
                                 .addComponent(jLabel14)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 373, Short.MAX_VALUE)
-                        .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(p3_createmoimLayout.createSequentialGroup()
-                                .addComponent(jLabel17)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(p3_createmoimLayout.createSequentialGroup()
-                                .addComponent(jLabel21)
-                                .addGap(18, 18, 18)
-                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(48, 48, 48)
+                        .addComponent(chkUsedGroupNm)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 337, Short.MAX_VALUE)))
                 .addGap(42, 42, 42)
                 .addComponent(cmoimBtn)
                 .addGap(60, 60, 60))
@@ -599,30 +666,20 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             .addGroup(p3_createmoimLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addComponent(jLabel14)
-                .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(p3_createmoimLayout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel16)
-                            .addComponent(cmoim_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel15)
-                            .addComponent(cmoim_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(p3_createmoimLayout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel17))
-                        .addGap(18, 18, 18)
-                        .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel21)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(58, 58, 58)
+                .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(cmoim_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkUsedGroupNm))
+                .addGap(18, 18, 18)
+                .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(cmoim_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(137, 137, 137)
                 .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmoimBtn)
                     .addComponent(main_page_Btn2))
-                .addContainerGap(371, Short.MAX_VALUE))
+                .addContainerGap(377, Short.MAX_VALUE))
         );
 
         pp.add(p3_createmoim, "c3");
@@ -631,7 +688,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         jLabel18.setText("검색단어 :");
 
-        searchBtn.setText("검색");
+        searchBtn.setText("검색/전체보기");
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBtnActionPerformed(evt);
@@ -667,35 +724,35 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        hobby1Btn.setText("취미1");
+        hobby1Btn.setText("아웃도어/여행");
         hobby1Btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hobby1BtnActionPerformed(evt);
             }
         });
 
-        hobby2Btn.setText("취미2");
+        hobby2Btn.setText("운동/스포츠");
         hobby2Btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hobby2BtnActionPerformed(evt);
             }
         });
 
-        hobby3Btn.setText("취미3");
+        hobby3Btn.setText("사진/영상");
         hobby3Btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hobby3BtnActionPerformed(evt);
             }
         });
 
-        hobby4Byn.setText("취미4");
+        hobby4Byn.setText("게임/오락");
         hobby4Byn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hobby4BynActionPerformed(evt);
             }
         });
 
-        hobby5Btn.setText("취미5");
+        hobby5Btn.setText("요리/제조");
         hobby5Btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hobby5BtnActionPerformed(evt);
@@ -718,8 +775,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        main_img.setText("main_img");
-
         javax.swing.GroupLayout p4_mainpanalLayout = new javax.swing.GroupLayout(p4_mainpanal);
         p4_mainpanal.setLayout(p4_mainpanalLayout);
         p4_mainpanalLayout.setHorizontalGroup(
@@ -728,8 +783,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(0, 249, Short.MAX_VALUE)
-                        .addComponent(hobby1Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(hobby1Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(19, 19, 19)
                         .addComponent(hobby2Btn)
                         .addGap(18, 18, 18)
@@ -747,31 +802,32 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(moim_crea_Btn))
                     .addComponent(jScrollPane3)))
-            .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                .addGap(323, 323, 323)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(18, 401, Short.MAX_VALUE)
-                        .addComponent(logout_btn)
-                        .addGap(41, 41, 41))
+                        .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                                .addGap(172, 172, 172)
+                                .addComponent(tomainPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(main_img, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(moim_detail_Btn))))
                     .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(69, 69, 69)
-                        .addComponent(moim_detail_Btn)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(172, 172, 172)
-                        .addComponent(tomainPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24)
-                        .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(251, 251, 251)
-                        .addComponent(main_img)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(18, 944, Short.MAX_VALUE)
+                        .addComponent(logout_btn)))
+                .addGap(41, 41, 41))
         );
         p4_mainpanalLayout.setVerticalGroup(
             p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -787,16 +843,20 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(hobby3Btn)
                     .addComponent(hobby4Byn)
                     .addComponent(hobby5Btn))
-                .addGap(96, 96, 96)
-                .addComponent(main_img)
-                .addGap(270, 270, 270)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(moim_detail_Btn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addGap(52, 52, 52)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(main_img, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(moim_detail_Btn))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tomainPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -856,7 +916,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         });
 
         tomoiminfoBtn.setFont(new java.awt.Font("굴림", 0, 48)); // NOI18N
-        tomoiminfoBtn.setText("정보");
+        tomoiminfoBtn.setText("모임장");
         tomoiminfoBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tomoiminfoBtnActionPerformed(evt);
@@ -916,7 +976,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(tomoiminfoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(toboardpanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tochatingPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 102, Short.MAX_VALUE)
+                .addGap(18, 111, Short.MAX_VALUE)
                 .addGroup(p5_moimpageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(moim_join_Btn)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p5_moimpageLayout.createSequentialGroup()
@@ -982,7 +1042,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         });
 
         tomoiminfoBtn1.setFont(new java.awt.Font("굴림", 0, 48)); // NOI18N
-        tomoiminfoBtn1.setText("정보");
+        tomoiminfoBtn1.setText("모임장");
         tomoiminfoBtn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tomoiminfoBtn1ActionPerformed(evt);
@@ -1042,7 +1102,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(create_board_Btn))
                 .addGap(18, 18, 18)
                 .addComponent(board_pageBtn1)
-                .addContainerGap(222, Short.MAX_VALUE))
+                .addContainerGap(227, Short.MAX_VALUE))
         );
 
         pp.add(p6_boardPanal, "c6");
@@ -1056,7 +1116,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         });
 
         tomoiminfoBtn2.setFont(new java.awt.Font("굴림", 0, 48)); // NOI18N
-        tomoiminfoBtn2.setText("정보");
+        tomoiminfoBtn2.setText("모임장");
         tomoiminfoBtn2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tomoiminfoBtn2ActionPerformed(evt);
@@ -1065,6 +1125,11 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         toboardpanalBtn2.setFont(new java.awt.Font("굴림", 0, 48)); // NOI18N
         toboardpanalBtn2.setText("게시판");
+        toboardpanalBtn2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toboardpanalBtn2ActionPerformed(evt);
+            }
+        });
 
         talkBar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1084,6 +1149,27 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         chatScreen.setColumns(20);
         chatScreen.setRows(5);
         jScrollPane5.setViewportView(chatScreen);
+
+        p7_dogBtn.setText("왈왈");
+        p7_dogBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p7_dogBtnActionPerformed(evt);
+            }
+        });
+
+        p7_catBtn.setText("야옹야옹");
+        p7_catBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p7_catBtnActionPerformed(evt);
+            }
+        });
+
+        p7_wolfBtn.setText("아우~~");
+        p7_wolfBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p7_wolfBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout p7_chatingPanalLayout = new javax.swing.GroupLayout(p7_chatingPanal);
         p7_chatingPanal.setLayout(p7_chatingPanalLayout);
@@ -1112,6 +1198,14 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                                 .addComponent(tochatingPanalBtn2)
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())))
+            .addGroup(p7_chatingPanalLayout.createSequentialGroup()
+                .addGap(78, 78, 78)
+                .addComponent(p7_dogBtn)
+                .addGap(42, 42, 42)
+                .addComponent(p7_catBtn)
+                .addGap(48, 48, 48)
+                .addComponent(p7_wolfBtn)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         p7_chatingPanalLayout.setVerticalGroup(
             p7_chatingPanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1122,7 +1216,12 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(tochatingPanalBtn2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
+                .addGap(60, 60, 60)
+                .addGroup(p7_chatingPanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(p7_dogBtn)
+                    .addComponent(p7_catBtn)
+                    .addComponent(p7_wolfBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                 .addGroup(p7_chatingPanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(talkBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(send_Btn))
@@ -1187,7 +1286,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addGroup(p8_createdocument_PanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel19)
                     .addComponent(gle, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addContainerGap(146, Short.MAX_VALUE))
         );
 
         pp.add(p8_createdocument_Panal, "c8");
@@ -1267,7 +1366,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(comment_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
 
         pp.add(p9_detailGlePanal, "c9");
@@ -1293,7 +1392,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         jLabel36.setText("변경 할 취미 : ");
 
-        update_hobby_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "취미1", "취미2", "취미3", "취미4", "취미5" }));
+        update_hobby_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "아웃도어/여행", "운동/스포츠", "사진/영상", "게임/오락", "요리/제조" }));
 
         jLabel37.setText("내가 가입한 모임");
 
@@ -1342,10 +1441,22 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
+        p10_time_v.setText("[ 가 입 기간");
+
+        jLabel38.setText("가입 기간 :");
+
         javax.swing.GroupLayout p10_mypagePanelLayout = new javax.swing.GroupLayout(p10_mypagePanel);
         p10_mypagePanel.setLayout(p10_mypagePanelLayout);
         p10_mypagePanelLayout.setHorizontalGroup(
             p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p10_mypagePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel30)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(moimnum_v, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(moim_delete_Btn)
+                .addGap(299, 299, 299))
             .addGroup(p10_mypagePanelLayout.createSequentialGroup()
                 .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(p10_mypagePanelLayout.createSequentialGroup()
@@ -1355,7 +1466,11 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                         .addComponent(update_mypage_Btn))
                     .addGroup(p10_mypagePanelLayout.createSequentialGroup()
                         .addGap(55, 55, 55)
-                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(p10_mypagePanelLayout.createSequentialGroup()
+                                .addComponent(jLabel29)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(myname_v))
                             .addGroup(p10_mypagePanelLayout.createSequentialGroup()
                                 .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(p10_mypagePanelLayout.createSequentialGroup()
@@ -1365,8 +1480,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                                     .addGroup(p10_mypagePanelLayout.createSequentialGroup()
                                         .addComponent(jLabel34)
                                         .addGap(18, 18, 18)
-                                        .addComponent(myhobby_v))
-                                    .addComponent(jLabel37))
+                                        .addComponent(myhobby_v)))
                                 .addGap(143, 143, 143)
                                 .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(p10_mypagePanelLayout.createSequentialGroup()
@@ -1377,26 +1491,22 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                                         .addComponent(jLabel33)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(update_loc_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(p10_mypagePanelLayout.createSequentialGroup()
-                                .addComponent(jLabel29)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(myname_v))))
+                                .addComponent(jLabel38)
+                                .addGap(18, 18, 18)
+                                .addComponent(p10_time_v, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(232, 232, 232))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p10_mypagePanelLayout.createSequentialGroup()
                         .addGap(51, 51, 51)
-                        .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(tomymoimPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)))
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(p10_mypagePanelLayout.createSequentialGroup()
+                                .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tomymoimPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel37))
+                        .addGap(2, 2, 2)))
                 .addContainerGap(255, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p10_mypagePanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel30)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(moimnum_v, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(moim_delete_Btn)
-                .addGap(299, 299, 299))
         );
         p10_mypagePanelLayout.setVerticalGroup(
             p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1421,11 +1531,15 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(myhobby_v)
                     .addComponent(jLabel36)
                     .addComponent(update_hobby_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(40, 40, 40)
+                .addGap(38, 38, 38)
+                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel38)
+                    .addComponent(p10_time_v, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addComponent(jLabel37)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                .addGap(35, 35, 35)
                 .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel30)
                     .addComponent(moimnum_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1438,6 +1552,144 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         );
 
         pp.add(p10_mypagePanel, "c10");
+
+        jLabel32.setFont(new java.awt.Font("굴림", 1, 36)); // NOI18N
+        jLabel32.setText("모임장 페이지");
+
+        p11_infoBtn.setText("소개글 변경");
+        p11_infoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p11_infoBtnActionPerformed(evt);
+            }
+        });
+
+        p11_joinBtn.setText("가입승인");
+        p11_joinBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p11_joinBtnActionPerformed(evt);
+            }
+        });
+
+        p11_deleteBtn.setText("강제탈퇴");
+        p11_deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p11_deleteBtnActionPerformed(evt);
+            }
+        });
+
+        moinBtn.setText("모임페이지로");
+        moinBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moinBtnActionPerformed(evt);
+            }
+        });
+
+        p11_info.setColumns(20);
+        p11_info.setRows(5);
+        jScrollPane7.setViewportView(p11_info);
+
+        p11_joinTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane10.setViewportView(p11_joinTable);
+
+        p11_delTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane11.setViewportView(p11_delTable);
+
+        p11_denyBtn.setText("승인거부");
+        p11_denyBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p11_denyBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout p11_moimjangLayout = new javax.swing.GroupLayout(p11_moimjang);
+        p11_moimjang.setLayout(p11_moimjangLayout);
+        p11_moimjangLayout.setHorizontalGroup(
+            p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(p11_moimjangLayout.createSequentialGroup()
+                .addGap(83, 83, 83)
+                .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(p11_moimjangLayout.createSequentialGroup()
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(p11_moimjangLayout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane7)
+                            .addComponent(jScrollPane10)
+                            .addComponent(jScrollPane11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p11_moimjangLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(p11_del_v, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(p11_join_v, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(p11_deny_v, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p11_moimjangLayout.createSequentialGroup()
+                        .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(p11_infoBtn)
+                            .addComponent(p11_joinBtn, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(285, 285, 285))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p11_moimjangLayout.createSequentialGroup()
+                        .addComponent(p11_deleteBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(moinBtn)
+                        .addGap(109, 109, 109))
+                    .addGroup(p11_moimjangLayout.createSequentialGroup()
+                        .addComponent(p11_denyBtn)
+                        .addContainerGap())))
+        );
+        p11_moimjangLayout.setVerticalGroup(
+            p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(p11_moimjangLayout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(p11_moimjangLayout.createSequentialGroup()
+                        .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(100, 100, 100)
+                        .addComponent(p11_infoBtn))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(p11_join_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(p11_joinBtn))
+                .addGap(18, 18, 18)
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(p11_deny_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(p11_denyBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addGroup(p11_moimjangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(moinBtn)
+                    .addComponent(p11_deleteBtn)
+                    .addComponent(p11_del_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35))
+        );
+
+        pp.add(p11_moimjang, "c11");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1456,19 +1708,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private void joinBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinBtnActionPerformed
         card.show(pp, "c2");
     }//GEN-LAST:event_joinBtnActionPerformed
-    
-    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-        // p4 - 모임 검색하기
-        String res = searchword.getText();
-        groupList(md.detailGroup(res));
-
-    }//GEN-LAST:event_searchBtnActionPerformed
-    
-    private void moim_crea_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_crea_BtnActionPerformed
-       //p4 - 모임 개설 페이지로 이동 버튼
-        card.show(pp, "c3");
-    }//GEN-LAST:event_moim_crea_BtnActionPerformed
-    
+            
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
       //p1 - id, pwd 입력 후 로그인하는 버튼
         mem = new AMember();
@@ -1481,6 +1721,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         mem = md.loginMd(mem,id); //loginMd (memberdto에 id에 해당하는 유저의 정보를 받아 저장합니다) 
         JOptionPane.showMessageDialog(this, "환영합니다","로그인 성공!" , JOptionPane.INFORMATION_MESSAGE);
         groupList(md.groupListMd(mem));//groupListMd -> 유저의 정보 중 취미에 해당하는 번호를 우선순위로 메인페이지에 출력하는 메서드입니다
+        mainImgShow(mem.getMhobby());
         card.show(pp, "c4");
         }else if(a ==0){
             JOptionPane.showMessageDialog(this, "아이디와 비밀번호가 불일치합니다.","로그인 실패!",JOptionPane.ERROR_MESSAGE);
@@ -1519,9 +1760,13 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         mem.setMloc((String) join_locCom.getSelectedItem());
         mem.setMjumin(jumin_front.getText().trim()+ jLabel24.getText()+jumin_behind.getText().trim());
         mem.setMhobby(join_hobbyCom.getSelectedIndex()+1);
-        md.joinMemberMd(mem); //사용자의 정보를 DB에 입력시키는 메서드입니다
+        int a = md.joinMemberMd(mem); //사용자의 정보를 DB에 입력시키는 메서드입니다
+        if(a == 0){
         JOptionPane.showMessageDialog(rootPane, "회원가입이 완료되었습니다!","환영합니다",JOptionPane.INFORMATION_MESSAGE);
         card.show(pp,"c1"); //가입이 완료되면 로그인페이지로 돌아감
+        }else{
+            JOptionPane.showMessageDialog(null, "아이디가 존재합니다", "경고!!", JOptionPane.ERROR_MESSAGE);
+        }
         } catch (NumberFormatException e) {
            JOptionPane.showMessageDialog(rootPane, "주민번호를 제대로 입력하세요","경고!!",JOptionPane.ERROR_MESSAGE);
         } catch(Jumin e){
@@ -1533,6 +1778,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
    
     private void mainpageBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainpageBtnActionPerformed
         //모임상세페이지에서 메인페이지로 이동하는 버튼
+        groupList(md.groupListMd(mem));
         card.show(pp, "c4");
         
     }//GEN-LAST:event_mainpageBtnActionPerformed
@@ -1553,65 +1799,79 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_cmoimBtnActionPerformed
    
     private void moim_join_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_join_BtnActionPerformed
-         //회원이 모임을 가입할 수 있는 버튼
-         
-        md.joinMd(mem,group );
-        
-        groupdetailList(md.listGroupMd(Integer.parseInt(searchnum.getText()))); //가입된 멤버 jtable에 출력
+         //회원이 모임을 가입신청 버튼
+        AJoin aj = new AJoin();
+        aj.setAgroup(group);
+        aj.setAmember(mem);
+        int ck = md.ckJoinDelay(aj);
+        if(ck==1){
+        md.joinMd(aj);
+        JOptionPane.showMessageDialog(board_content, "가입신청 완료. 모임장이 수락할때까지 대기해주세요");
+        } else if(ck==-1){
+        JOptionPane.showMessageDialog(board_content, "이미 가입한 그룹입니다");
+        }
+        else{
+        JOptionPane.showMessageDialog(board_content, "이미 가입 신청을 했습니다.");
+        }
+        groupdetailList(md.listGroupMd(group.getGroupnum())); //가입된 멤버 jtable에 출력
         System.out.println(group.getGroupnum());
     }//GEN-LAST:event_moim_join_BtnActionPerformed
-    // 내 정보 확인 페이지 이동 버튼(mypage)
-    private void tomymoimPanalBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomymoimPanalBtnActionPerformed
-        myname_v.setText(mem.getMname());
-        myloc_v.setText(mem.getMloc());
-        myhobby_v.setText(String.valueOf(mem.getMhobby()));
-        
-        myGroupList(md.listMyGroupMd(mem.getMembernum()));
-        card.show(pp, "c10");
-    }//GEN-LAST:event_tomymoimPanalBtnActionPerformed
-    //메인페이지에서 로그아웃 버튼
-    private void logout_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logout_btnActionPerformed
-        
-        card.show(pp, "c1");
-    }//GEN-LAST:event_logout_btnActionPerformed
-    private void moim_detail_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_detail_BtnActionPerformed
-            //모임 번호로 search한 모임 상세페이지 이동버튼
-        int moimnum = Integer.parseInt(searchnum.getText().trim()) ;
-        group = new AGroup();
-        group.setGroupnum(moimnum);
-        group = md.enterGroupMd(group);
-        moimTitle.setText(group.getGname());
-        moim_info.setText(group.getGinfo());
-        groupdetailList(md.listGroupMd(Integer.parseInt(searchnum.getText())));
-        
-        
-        card.show(pp, "c5");
-        
-    }//GEN-LAST:event_moim_detail_BtnActionPerformed
 
     private void main_page_Btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_main_page_Btn2ActionPerformed
         card.show(pp, "c4");
     }//GEN-LAST:event_main_page_Btn2ActionPerformed
 
     private void tomoiminfoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomoiminfoBtnActionPerformed
-        // TODO add your handling code here:
+    p11_info.setText(group.getGinfo());
+    AJoin aj = new AJoin();
+     aj.setAgroup(group);
+     aj.setAmember(mem);
+     int jangck = md.ckMoimjang(aj);
+    if(jangck ==1){    
+    getApplicantList(md.getApplicantList(group));
+    card.show(pp, "c11");
+    }else{
+    JOptionPane.showMessageDialog(board_content, "모임장만 볼수있습니다.");
+    }   
     }//GEN-LAST:event_tomoiminfoBtnActionPerformed
 // 모임페이지에서 메인메이지로
     private void board_pageBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_board_pageBtn1ActionPerformed
+        groupList(md.groupListMd(mem));
         card.show(pp, "c4");
         
     }//GEN-LAST:event_board_pageBtn1ActionPerformed
 
     private void tomoiminfoBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomoiminfoBtn1ActionPerformed
-        // TODO add your handling code here:
+    p11_info.setText(group.getGinfo());
+    AJoin aj = new AJoin();
+     aj.setAgroup(group);
+     aj.setAmember(mem);
+     int jangck = md.ckMoimjang(aj);
+    if(jangck ==1){    
+    getApplicantList(md.getApplicantList(group));
+    card.show(pp, "c11");
+    }else{
+    JOptionPane.showMessageDialog(board_content, "모임장만 볼수있습니다.");
+    }         
     }//GEN-LAST:event_tomoiminfoBtn1ActionPerformed
 
     private void tomoiminfoBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomoiminfoBtn2ActionPerformed
-        // TODO add your handling code here:
+    p11_info.setText(group.getGinfo());
+    AJoin aj = new AJoin();
+     aj.setAgroup(group);
+     aj.setAmember(mem);
+     int jangck = md.ckMoimjang(aj);
+    if(jangck ==1){    
+    getApplicantList(md.getApplicantList(group));
+    card.show(pp, "c11");
+    }else{
+    JOptionPane.showMessageDialog(board_content, "모임장만 볼수있습니다.");
+    }   
     }//GEN-LAST:event_tomoiminfoBtn2ActionPerformed
 
     private void chating_pageBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chating_pageBtn2ActionPerformed
-        // TODO add your handling code here:
+    groupList(md.groupListMd(mem));
+    card.show(pp, "c5");
     }//GEN-LAST:event_chating_pageBtn2ActionPerformed
 
     private void tomymoimPanalBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomymoimPanalBtn1ActionPerformed
@@ -1628,7 +1888,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         
         myname_v.setText(mem.getMname());
         myloc_v.setText(mem.getMloc());
-        myhobby_v.setText(String.valueOf(mem.getMhobby()));
+        myhobby_v.setText(mem.getHobby().getHname());
+        p10_time_v.setText(mem.getJoindate());
        }
            
        
@@ -1636,6 +1897,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_update_mypage_BtnActionPerformed
 
     private void tomainPanalBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomainPanalBtn1ActionPerformed
+        groupList(md.groupListMd(mem));
+        mainImgShow(mem.getMhobby());
         card.show(pp, "c4");
     }//GEN-LAST:event_tomainPanalBtn1ActionPerformed
 
@@ -1659,8 +1922,16 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_addBoardBtnActionPerformed
     // 게시판 목록으로 이동하는 버튼
     private void toboardpanalBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toboardpanalBtnActionPerformed
+        AJoin aj = new AJoin();
+        aj.setAgroup(group);
+        aj.setAmember(mem);
+        int ck = md.ckGJlList(aj);
+        if(ck==1){
         listContent();
         card.show(pp, "c6");
+        }else{
+            JOptionPane.showMessageDialog(board_content, "가입하지 않은 모임입니다. 가입을 먼저해주세요.");
+        }
     }//GEN-LAST:event_toboardpanalBtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -1669,20 +1940,20 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
     // 상세 게시글 보기
     private void detail_board_show_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detail_board_show_BtnActionPerformed
+        try {
         BoardComm bc = new BoardComm();
         board = new Board();
-        board.setBoardnum(Integer.parseInt(search_detail_board.getText()));
+        board.setWlist(Integer.parseInt(search_detail_board.getText()));
         board = md.getDetail(board);
         bc.setBo(board);
         board_writer_name.setText(board.getAmember().getMname());
         content_name.setText(board.getSubject());
         board_content.setText(board.getContent());
-        
         printCommentlist(bc);
-        
-        
         card.show(pp, "c9");
-        
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(board_content, "숫자를 입력해주세요");
+        }
     }//GEN-LAST:event_detail_board_show_BtnActionPerformed
  // 게시글 상세보기에서 게시글 목록으로 뒤로가는 버튼
     private void to_moimBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_to_moimBtnActionPerformed
@@ -1711,7 +1982,19 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_tochatingPanalBtn1ActionPerformed
 
     private void tochatingPanalBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tochatingPanalBtnActionPerformed
+        AJoin aj = new AJoin();
+        aj.setAgroup(group);
+        aj.setAmember(mem);
+        int ck = md.ckGJlList(aj);
+        if(ck==1){
         chatConn();
+        card.show(pp, "c7");
+        }else{
+            JOptionPane.showMessageDialog(board_content, "가입하지 않은 모임입니다. 가입을 먼저해주세요.");
+        }
+
+
+
     }//GEN-LAST:event_tochatingPanalBtnActionPerformed
 
     private void talkBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_talkBarActionPerformed
@@ -1737,19 +2020,99 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
        chatConn();
     }//GEN-LAST:event_tochatingPanalBtn2ActionPerformed
 
-    private void hobby1BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby1BtnActionPerformed
-        // 취미버튼 1
-        hobbynum = 1;
-        mainImgShow(hobbynum);
-        groupList(md.selectGroupHobby(hobbynum));
-    }//GEN-LAST:event_hobby1BtnActionPerformed
+    private void p11_joinBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_joinBtnActionPerformed
+        try{
+        int joinnum = Integer.parseInt(p11_join_v.getText());
+        AJoin aj = md.getAplicantInfo(joinnum);
+        md.acceptJoin(aj);
+        JOptionPane.showMessageDialog(board_content, "가입이 승인되었습니다.");
+        getApplicantList(md.getApplicantList(group));
+        groupdetailList(md.listGroupMd(group.getGroupnum()));
+        } catch(NumberFormatException e){
+            System.out.println("숫자를 입력해주세요");
+        }
+    }//GEN-LAST:event_p11_joinBtnActionPerformed
 
-    private void hobby2BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby2BtnActionPerformed
-       // 취미버튼 1
-        hobbynum = 2;
+    private void p11_denyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_denyBtnActionPerformed
+    try{
+        AJoin aj = new AJoin();
+        AMember m = new AMember();
+        int denynum = Integer.parseInt(p11_deny_v.getText());
+        m.setMembernum(denynum);
+        aj.setAmember(m);
+        aj.setAgroup(group);
+        int a = JOptionPane.showConfirmDialog(rootPane, "정말 가입 거부하시겠습니까??", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+        if(a==0){
+        md.denyJoin(aj);
+        JOptionPane.showMessageDialog(board_content, "가입이 거부되었습니다.");
+        getApplicantList(md.getApplicantList(group));
+        }
+    }catch(NumberFormatException e){
+            System.out.println("숫자를 입력해주세요");
+        }
+    }//GEN-LAST:event_p11_denyBtnActionPerformed
+
+    private void moinBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moinBtnActionPerformed
+       card.show(pp, "c5");
+    }//GEN-LAST:event_moinBtnActionPerformed
+
+    private void p7_dogBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p7_dogBtnActionPerformed
+       StringBuilder sb = new StringBuilder();
+       String msg = new Dog().cry();
+       sb.append("talk").append("/").append(group.getGroupnum()).append("/").append(mem.getMid()).append("/").append(msg);
+       pw.println(sb.toString());
+    }//GEN-LAST:event_p7_dogBtnActionPerformed
+
+    private void p7_catBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p7_catBtnActionPerformed
+       StringBuilder sb = new StringBuilder();
+       String msg = new Cat().cry();
+       sb.append("talk").append("/").append(group.getGroupnum()).append("/").append(mem.getMid()).append("/").append(msg);
+       pw.println(sb.toString());
+    }//GEN-LAST:event_p7_catBtnActionPerformed
+
+    private void p7_wolfBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p7_wolfBtnActionPerformed
+       StringBuilder sb = new StringBuilder();
+       String msg = new Wolf().cry();
+       sb.append("talk").append("/").append(group.getGroupnum()).append("/").append(mem.getMid()).append("/").append(msg);
+       pw.println(sb.toString());
+    }//GEN-LAST:event_p7_wolfBtnActionPerformed
+
+    private void moim_detail_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_detail_BtnActionPerformed
+        //모임 번호로 search한 모임 상세페이지 이동버튼
+        int moimnum = Integer.parseInt(searchnum.getText().trim()) ;
+        group = new AGroup();
+        group.setGroupnum(moimnum);
+        group = md.enterGroupMd(group);
+        moimTitle.setText(group.getGname());
+        moim_info.setText(group.getGinfo());
+        int ckgroup = md.ckGroup(group);
+        if(ckgroup == 1){
+        groupdetailList(md.listGroupMd(group.getGroupnum()));
+        card.show(pp, "c5");
+        }else{
+        JOptionPane.showMessageDialog(board_content, group.getGroupnum()+"는 없는 그룹 번호입니다.");
+        }
+    }//GEN-LAST:event_moim_detail_BtnActionPerformed
+
+   //메인페이지에서 로그아웃 버튼
+    private void logout_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logout_btnActionPerformed
+
+        card.show(pp, "c1");
+    }//GEN-LAST:event_logout_btnActionPerformed
+
+    private void hobby5BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby5BtnActionPerformed
+        // 취미버튼 1
+        hobbynum = 5;
         mainImgShow(hobbynum);
         groupList(md.selectGroupHobby(hobbynum));
-    }//GEN-LAST:event_hobby2BtnActionPerformed
+    }//GEN-LAST:event_hobby5BtnActionPerformed
+
+    private void hobby4BynActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby4BynActionPerformed
+        // 취미버튼 1
+        hobbynum = 4;
+        mainImgShow(hobbynum);
+        groupList(md.selectGroupHobby(hobbynum));
+    }//GEN-LAST:event_hobby4BynActionPerformed
 
     private void hobby3BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby3BtnActionPerformed
         // 취미버튼 1
@@ -1758,19 +2121,86 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         groupList(md.selectGroupHobby(hobbynum));
     }//GEN-LAST:event_hobby3BtnActionPerformed
 
-    private void hobby4BynActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby4BynActionPerformed
+    private void hobby2BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby2BtnActionPerformed
         // 취미버튼 1
-        hobbynum = 4;        
+        hobbynum = 2;
         mainImgShow(hobbynum);
         groupList(md.selectGroupHobby(hobbynum));
-    }//GEN-LAST:event_hobby4BynActionPerformed
+    }//GEN-LAST:event_hobby2BtnActionPerformed
 
-    private void hobby5BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby5BtnActionPerformed
+    private void hobby1BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby1BtnActionPerformed
         // 취미버튼 1
-        hobbynum = 5;
+        hobbynum = 1;
         mainImgShow(hobbynum);
         groupList(md.selectGroupHobby(hobbynum));
-    }//GEN-LAST:event_hobby5BtnActionPerformed
+    }//GEN-LAST:event_hobby1BtnActionPerformed
+
+    private void moim_crea_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_crea_BtnActionPerformed
+        //p4 - 모임 개설 페이지로 이동 버튼
+        card.show(pp, "c3");
+    }//GEN-LAST:event_moim_crea_BtnActionPerformed
+
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        // p4 - 모임 검색하기
+        String res = searchword.getText();
+        mainImgShow(hobbynum);
+        groupList(md.detailGroup(res));
+    }//GEN-LAST:event_searchBtnActionPerformed
+
+    private void tomymoimPanalBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomymoimPanalBtnActionPerformed
+        myname_v.setText(mem.getMname());
+        myloc_v.setText(mem.getMloc());
+        myhobby_v.setText(mem.getHobby().getHname());
+        p10_time_v.setText(mem.getJoindate());
+        myGroupList(md.listMyGroupMd(mem.getMembernum()));
+        card.show(pp, "c10");
+        
+    }//GEN-LAST:event_tomymoimPanalBtnActionPerformed
+
+    private void toboardpanalBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toboardpanalBtn2ActionPerformed
+        card.show(pp, "c6");
+    }//GEN-LAST:event_toboardpanalBtn2ActionPerformed
+
+    private void p11_deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_deleteBtnActionPerformed
+        AJoin aj = new AJoin();
+        int kicknum = Integer.parseInt(p11_del_v.getText());
+        AMember m = new AMember();
+        m.setMembernum(kicknum);
+        aj.setAmember(m);
+        aj.setAgroup(group);
+        int a = JOptionPane.showConfirmDialog(rootPane, "정말 추방하시겠습니까??", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+        if(a==0){
+        md.kickPpl(aj);
+        groupdetailList(md.listGroupMd(group.getGroupnum()));
+        }
+    }//GEN-LAST:event_p11_deleteBtnActionPerformed
+
+    private void p11_infoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_infoBtnActionPerformed
+        group.setGinfo(p11_info.getText());
+        md.changeGinfo(group);
+        p11_info.setText(group.getGinfo());
+        JOptionPane.showMessageDialog(board_content, "소개글이 변경되었습니다");
+    }//GEN-LAST:event_p11_infoBtnActionPerformed
+
+    private void chkUsedIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUsedIdActionPerformed
+        if(md.chkUsedIdMd(join_id.getText()) == true){
+            JOptionPane.showMessageDialog(board_content, "사용 중인 아이디");
+            join_id.setText("");
+            return;
+        } else{
+            JOptionPane.showMessageDialog(board_content, "사용 가능한 아이디");
+        }
+    }//GEN-LAST:event_chkUsedIdActionPerformed
+
+    private void chkUsedGroupNmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUsedGroupNmActionPerformed
+        if(md.chkUsedGroupNm(cmoim_name.getText()) == true) {
+            JOptionPane.showMessageDialog(board_content, "사용 중인 모임명");
+            cmoim_name.setText("");
+            return;
+        } else {
+            JOptionPane.showMessageDialog(board_content, "사용 가능한 모임명");
+        }
+    }//GEN-LAST:event_chkUsedGroupNmActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1817,6 +2247,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JTextArea chatScreen;
     private javax.swing.JButton chating_pageBtn2;
+    private javax.swing.JButton chkUsedGroupNm;
+    private javax.swing.JButton chkUsedId;
     private javax.swing.JButton cmoimBtn;
     private javax.swing.JTextField cmoim_info;
     private javax.swing.JTextField cmoim_name;
@@ -1832,10 +2264,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JButton hobby3Btn;
     private javax.swing.JButton hobby4Byn;
     private javax.swing.JButton hobby5Btn;
-    private javax.swing.JLabel imgSrc;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1844,12 +2273,10 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
@@ -1861,10 +2288,12 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1872,11 +2301,14 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JButton joinBtn;
@@ -1903,19 +2335,35 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JButton moim_join_Btn;
     private javax.swing.JTable moimlist;
     private javax.swing.JTextField moimnum_v;
+    private javax.swing.JButton moinBtn;
     private javax.swing.JLabel myhobby_v;
     private javax.swing.JLabel myloc_v;
     private javax.swing.JTable mymoimList_table;
     private javax.swing.JLabel myname_v;
     private javax.swing.JButton nextBtn;
     private javax.swing.JPanel p10_mypagePanel;
+    private javax.swing.JLabel p10_time_v;
+    private javax.swing.JTable p11_delTable;
+    private javax.swing.JTextField p11_del_v;
+    private javax.swing.JButton p11_deleteBtn;
+    private javax.swing.JButton p11_denyBtn;
+    private javax.swing.JTextField p11_deny_v;
+    private javax.swing.JTextArea p11_info;
+    private javax.swing.JButton p11_infoBtn;
+    private javax.swing.JButton p11_joinBtn;
+    private javax.swing.JTable p11_joinTable;
+    private javax.swing.JTextField p11_join_v;
+    private javax.swing.JPanel p11_moimjang;
     private javax.swing.JPanel p1_login;
     private javax.swing.JPanel p2_adduser;
     private javax.swing.JPanel p3_createmoim;
     private javax.swing.JPanel p4_mainpanal;
     private javax.swing.JPanel p5_moimpage;
     private javax.swing.JPanel p6_boardPanal;
+    private javax.swing.JButton p7_catBtn;
     private javax.swing.JPanel p7_chatingPanal;
+    private javax.swing.JButton p7_dogBtn;
+    private javax.swing.JButton p7_wolfBtn;
     private javax.swing.JPanel p8_createdocument_Panal;
     private javax.swing.JPanel p9_detailGlePanal;
     private javax.swing.JPanel pp;
@@ -1925,6 +2373,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JTextField searchnum;
     private javax.swing.JTextField searchword;
     private javax.swing.JButton send_Btn;
+    private javax.swing.JLabel show_hobby;
     private javax.swing.JTextField talkBar;
     private javax.swing.JButton to_moimBtn;
     private javax.swing.JButton toboardpanalBtn;

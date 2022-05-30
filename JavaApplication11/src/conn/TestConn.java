@@ -17,8 +17,8 @@ public class TestConn {
     }
     public static Connection getConn() throws SQLException{
         String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        String user = "semi0523";
-        String password = "semi0523";
+        String user = "semi";
+        String password = "semi";
         return DriverManager.getConnection(url, user,password);
     }
     

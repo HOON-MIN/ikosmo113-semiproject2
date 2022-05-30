@@ -11,8 +11,33 @@ package dto;
  */
 public class AMember {
 
-    private int membernum , mhobby;
-    private String mid, mpwd, mname, mloc, mjumin, mgender,mdate;
+    private int membernum , mhobby,age;
+    private String mid, mpwd, mname, mloc, mjumin, mgender,mdate,joindate;
+    private Hobby hobby;
+
+    public Hobby getHobby() {
+        return hobby;
+    }
+
+    public void setHobby(Hobby hobby) {
+        this.hobby = hobby;
+    }
+    
+    public String getJoindate() {
+        return joindate;
+    }
+
+    public void setJoindate(String joindate) {
+        this.joindate = joindate;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     public String getMgender() {
         return mgender;

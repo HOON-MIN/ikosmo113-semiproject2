@@ -13,7 +13,16 @@ public class AGroup {
 
     private int groupnum, ghobby;
     private String gname, gloc, ginfo, gdate;
+    private Hobby hobby;
 
+    public Hobby getHobby() {
+        return hobby;
+    }
+
+    public void setHobby(Hobby hobby) {
+        this.hobby = hobby;
+    }
+    
     public int getGroupnum() {
         return groupnum;
     }
