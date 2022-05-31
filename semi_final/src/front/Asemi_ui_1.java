@@ -1987,7 +1987,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private void moim_delete_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_delete_BtnActionPerformed
         // 내정보페이지에서 모임 탈퇴하기 버튼
        
-            int delnum = Integer.parseInt(moimnum_v.getText());
+         int delnum = Integer.parseInt(moimnum_v.getText());
         AJoin aj = new AJoin();
         aj.setMembernum(mem.getMembernum());
         aj.setGroupnum(delnum);

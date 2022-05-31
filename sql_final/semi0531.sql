@@ -276,6 +276,13 @@ end;
 end;
 /
 
+create or replace procedure gsearch(groupn varchar2 , cur out sys_refcursor) is
+begin
+open cur for
+select g.gname,g.ghobby,g.gloc,g.groupnum,g.ginfo,h.hname from AGroup g, hobby h 
+where g.ghobby = h.hobbynum and( gname like '%'||groupn||'%' or ginfo like '%'||groupn||'%');
+end; 
+/
 
 
 
@@ -297,4 +304,14 @@ elsif deleting then
 insert into amember_log values(amember_log_seq.nextVal,'amember','Å»Åð',:old.membernum,:old.mid,sysdate);
 end if;
 end;
+/
+--È¸¿øÅ»Åð
+create or replace PROCEDURE dropMember(num in number)
+IS
+BEGIN
+delete from ajoin_delay where membernum = num;
+delete from board where membernum = num;
+delete from ajoin where membernum = num;
+delete from amember where membernum = num;
+END;
 /
