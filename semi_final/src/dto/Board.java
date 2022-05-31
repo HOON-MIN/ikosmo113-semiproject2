@@ -26,7 +26,9 @@ public class Board {
     public void setWlist(int wlist) {
         this.wlist = wlist;
     }
+
    
+
     public AMember getAmember() {
         return amember;
     }

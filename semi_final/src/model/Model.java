@@ -15,38 +15,25 @@ import java.util.ArrayList;
 public class Model {
 
      // 회원가입 
-    public int joinMemberMd(AMember mem) {
-        return ADao.getDao().joinMember(mem);
+    public int joinMemberMd(AMember vo) {
+        return ADao.getDao().joinMember(vo);
     }
-    
-    // 회원가입시 ID 중복 체크
-    public boolean chkUsedIdMd(String mid){
-        return ADao.getDao().chkUsedId(mid);
-    }
-    
-    // 로그인
+     //로그인
     public AMember loginMd( AMember vo,String id) {
        return ADao.getDao().login(vo,id);
     }
-    // 로그인id - pwd 체크
+    //로그인id - pwd 체크
     public int checkIdMd(String id, String pwd){
         return ADao.getDao().checkId(id, pwd);
     }
-    
-    // 그룹만들기
+    //그룹만들기
      public void addGroupMd(AMember ref , AGroup ref2){
          ADao.getDao().addGroup(ref, ref2);
      }
-     
-    // 그룹만들기 시 그룹명 중복 체크
-    public boolean chkUsedGroupNm(String gname){
-        return ADao.getDao().chkUsedGroupNm(gname);
-    }
-     
-    // 메인페이지 그룹 리스트
-    public ArrayList<AGroup> groupListMd(AMember ref) {
-        return ADao.getDao().groupList(ref);
-    }
+     // 메인페이지 그룹 리스트
+      public ArrayList<AGroup> groupListMd(AMember ref) {
+          return ADao.getDao().groupList(ref);
+      }
        //모임 이름검색하기
     public ArrayList<AGroup> detailGroup(String gname){
         return ADao.getDao().detailGroup(gname);
@@ -63,13 +50,13 @@ public class Model {
     public int ckGroup(AGroup g){
         return ADao.getDao().ckGroup(g);
     }
-    // 모임 가입 수락
-    public void acceptJoin(AJoin aj){
-        ADao.getDao().acceptJoin(aj);
+ // 모임 가입 수락
+    public void acceptJoin(int a, int b){
+        ADao.getDao().acceptJoin(a,b);
     }
     // 모임 신청인 그룹번호 가져오기
-    public AJoin getAplicantInfo(int mnum){
-        return ADao.getDao().getAplicantInfo(mnum);
+    public int getAplicantInfo(AJoin aj){
+        return ADao.getDao().getAplicantInfo(aj);
     }
     // 모임 가입신청 거부
     public void denyJoin(AJoin aj){
@@ -93,7 +80,10 @@ public class Model {
      public ArrayList<AJoin> listGroupMd(int num){
          return ADao.getDao().listGroup(num);
      }
-
+     //모임에서 추방
+       public int kickPpl(AJoin aj){
+         return ADao.getDao().kickPpl(aj);
+     }
      //모임 소개글 변경
      public void changeGinfo(AGroup group){
          ADao.getDao().changeGinfo(group);
@@ -116,8 +106,8 @@ public class Model {
          return ADao.getDao().listBoard(group);
      }
      // 게시글 상세내용 출력
-     public Board getDetail(Board a) {
-         return ADao.getDao().getDetailBoard(a);
+     public Board getDetail(Board a, AGroup ag) {
+         return ADao.getDao().getDetailBoard(a,ag);
      }
      
      //댓글 달기
@@ -129,27 +119,31 @@ public class Model {
            return ADao.getDao().getDetailBoardComm(bc);
        }
        // 내가 가입한 모임 탈퇴하기
-     public void deleteMyMoimMd(AJoin a){
-         ADao.getDao().deleteMyMoim(a);
+     public int deleteMyMoimMd(AJoin a){
+         return ADao.getDao().deleteMyMoim(a);
      }
-     // 선택한 취미검색
-      public ArrayList<AGroup> selectGroupHobby(int num) {
-        return  ADao.getDao().selectGroupHobby(num);
-      }
-      public int ckGJlList(AJoin aj){
-          return ADao.getDao().ckGjlist(aj);
-      }
-      //모임에서 추방
-      public int kickPpl(AJoin aj){
-          return ADao.getDao().kickPpl(aj);
-      }
-      
       // 모임장이 모임 삭제하기
-     public void deleteMyMoim2(AJoin a){
-         ADao.getDao().deleteMyMoim2(a);
+     public void deleteMyMoim2(int delnum){
+         ADao.getDao().deleteMyMoim2(delnum);
      }
      // 모임장인지 확인
      public int ckMoimjang2(AJoin aj){
          return ADao.getDao().ckMoimjang2(aj);
      }
+     // 선택한 취미검색
+      public ArrayList<AGroup> selectGroupHobby(int num) {
+        return  ADao.getDao().selectGroupHobby(num);
+      }
+      //그룹에 가입되있는 회원 번호 출력
+      public int ckGJlList(AJoin aj){
+          return ADao.getDao().ckGjlist(aj);
+      }
+      //회원가입시 중복된 아이디 체크 
+       public boolean chkUsedId(String mid){
+           return ADao.getDao().chkUsedId(mid);
+       }
+      // 회원 탈퇴
+       public void dropMemberMd(AMember mem){
+            ADao.getDao().dropMember(mem);
+       }
 }

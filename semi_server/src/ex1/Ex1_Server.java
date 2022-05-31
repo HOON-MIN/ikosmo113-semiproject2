@@ -25,9 +25,8 @@ public class Ex1_Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-	public void excute() throws SocketException {
+	public void excute(){
 		while (true) {
 			try {
 				Socket s = ss.accept();
@@ -43,25 +42,23 @@ public class Ex1_Server {
 		}
 	}
 	public void sendMsg(String str1, String str2, String str3, String str4) {
-		String type1 = str1; // talk, draw, enter 등의 프로토콜을 작성
-		String type2 = str2; // nickname, color, all 등의 프로토콜을 작성
-		String type3 = str3; // non, x, speaker
-		String type4 = str4; // none, y, say;
-		// 응답(response)
+		String type1 = str1; // talk,welcome
+		String type2 = str2; // usernum값
+		String type3 = str3; // userid
+		String type4 = str4; // msg;
 		String str = "";
 		Chat ch = new Chat();
 		ch.setGroupnum(Integer.parseInt(type2.trim()));
 		ch.setTalk(type4);
 		md.addChat(ch);
-		//talk/all/nickname/say
-		if(type2.equals(type2)) {
+		//talk/
+		if(type1.equals("talk")) {
 			str = /* "talk/none/none/"+" */ "["+type3+"]"+type4;
 			System.out.println("Message : "+ str);
-		}else if(type1.equals("draw")) {
-			//ex) draw/color/x/y
-			str= type1+"/"+type2+"/"+type3+"/"+type4;
-		}else if(type1.equals("enter")) {
-			//code
+		}else if(type1.equals("exit")) {
+			str= type3+"님이 퇴장하셨습니다";
+		}else if(type1.equals("welcome")) {
+			str= type3+"님 환영합니다.";
 		}
 
 		//모든 유저에게 완성된 str을 스트림을 통해서 보내는 작업
@@ -71,14 +68,11 @@ public class Ex1_Server {
 		}
 	}
 public static void main(String[] args) {
-	try {
 		new Ex1_Server(9999).excute();
-	} catch (SocketException e) {
-		System.out.println("로그아웃 발생");
-		e.printStackTrace();
+
 	}
 }	
-}
+
 	
 
 

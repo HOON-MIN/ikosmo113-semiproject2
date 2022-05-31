@@ -61,14 +61,7 @@ public class ServerThread extends Thread{
 
 
 	public void transMsg(String msg) {
-		// ex) draw/color/x/y
 		StringTokenizer stn = new StringTokenizer(msg,"/");
-//		ArrayList<String> ref = new ArrayList<String>();
-/*		while(stn.hasMoreTokens()){
-			String m1 = stn.nextToken();
-			ref.add(m1);
-			System.out.println(m1);
-		} */
 		String str1 = stn.nextToken();
 		String str2 = stn.nextToken();
 		groupnum = str2.trim();
@@ -78,8 +71,6 @@ public class ServerThread extends Thread{
 		System.out.println("Log Token : "+str2);
 		System.out.println("Log Token : "+str3);
 		System.out.println("Log Token : "+str4);
-		//server의 sendMsg를 호출시 프로토콜을 잘라서 전달
-		//ArrayList를 가지고 있는 것이 서버이기 떄문에 서버에 sendMsg를 만들어 놓음
 		server.sendMsg(str1, str2, str3, str4);
 		
 	}

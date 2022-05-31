@@ -116,13 +116,14 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                           ck = 1;
                         }
                     });
+                    if(ck==1){ pw.println("exit/"+group.getGroupnum()+"/"+mem.getMid()+"/msg");}
                     while(ck!=1){
                         try {
                             String msg = br.readLine();
                             System.out.println(msg);
                             chatScreen.append(msg+"\n");
                         } catch (IOException ex) {
-                            Logger.getLogger(Asemi_ui_1.class.getName()).log(Level.SEVERE, null, ex);
+                            ex.printStackTrace();
                         }
                     }
                 }
@@ -257,7 +258,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         jumin_front = new javax.swing.JTextField();
         jumin_behind = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
-        chkUsedId = new javax.swing.JButton();
+        useMid = new javax.swing.JButton();
         p3_createmoim = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
@@ -266,7 +267,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         cmoim_info = new javax.swing.JTextField();
         cmoimBtn = new javax.swing.JButton();
         main_page_Btn2 = new javax.swing.JButton();
-        chkUsedGroupNm = new javax.swing.JButton();
         p4_mainpanal = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         searchword = new javax.swing.JTextField();
@@ -274,7 +274,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         moim_crea_Btn = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         mainPrintTable = new javax.swing.JTable();
-        tomainPanalBtn = new javax.swing.JButton();
         tomymoimPanalBtn = new javax.swing.JButton();
         hobby1Btn = new javax.swing.JButton();
         hobby2Btn = new javax.swing.JButton();
@@ -358,12 +357,12 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         mymoimList_table = new javax.swing.JTable();
         update_mypage_Btn = new javax.swing.JButton();
         tomainPanalBtn1 = new javax.swing.JButton();
-        tomymoimPanalBtn1 = new javax.swing.JButton();
         jLabel30 = new javax.swing.JLabel();
         moimnum_v = new javax.swing.JTextField();
         moim_delete_Btn = new javax.swing.JButton();
         p10_time_v = new javax.swing.JLabel();
         jLabel38 = new javax.swing.JLabel();
+        dropMemBtn = new javax.swing.JButton();
         p11_moimjang = new javax.swing.JPanel();
         jLabel32 = new javax.swing.JLabel();
         p11_infoBtn = new javax.swing.JButton();
@@ -505,10 +504,10 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         jLabel24.setText("-");
 
-        chkUsedId.setText("ID 중복체크");
-        chkUsedId.addActionListener(new java.awt.event.ActionListener() {
+        useMid.setText("중복확인");
+        useMid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkUsedIdActionPerformed(evt);
+                useMidActionPerformed(evt);
             }
         });
 
@@ -552,7 +551,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                             .addGap(18, 18, 18)
                             .addComponent(join_pwd, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
-                .addComponent(chkUsedId)
+                .addComponent(useMid)
                 .addGap(104, 104, 104)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
@@ -561,7 +560,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(join_hobbyCom, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(join_locCom, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(365, Short.MAX_VALUE))
+                .addContainerGap(391, Short.MAX_VALUE))
         );
         p2_adduserLayout.setVerticalGroup(
             p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -574,7 +573,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                     .addComponent(join_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
                     .addComponent(join_locCom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkUsedId))
+                    .addComponent(useMid))
                 .addGap(18, 18, 18)
                 .addGroup(p2_adduserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -624,13 +623,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        chkUsedGroupNm.setText("모임명 중복 확인");
-        chkUsedGroupNm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkUsedGroupNmActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout p3_createmoimLayout = new javax.swing.GroupLayout(p3_createmoim);
         p3_createmoim.setLayout(p3_createmoimLayout);
         p3_createmoimLayout.setHorizontalGroup(
@@ -654,9 +646,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                             .addGroup(p3_createmoimLayout.createSequentialGroup()
                                 .addGap(140, 140, 140)
                                 .addComponent(jLabel14)))
-                        .addGap(48, 48, 48)
-                        .addComponent(chkUsedGroupNm)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 337, Short.MAX_VALUE)))
+                        .addGap(49, 552, Short.MAX_VALUE)))
                 .addGap(42, 42, 42)
                 .addComponent(cmoimBtn)
                 .addGap(60, 60, 60))
@@ -666,11 +656,10 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             .addGroup(p3_createmoimLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addComponent(jLabel14)
-                .addGap(58, 58, 58)
+                .addGap(59, 59, 59)
                 .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
-                    .addComponent(cmoim_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkUsedGroupNm))
+                    .addComponent(cmoim_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
@@ -679,7 +668,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addGroup(p3_createmoimLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmoimBtn)
                     .addComponent(main_page_Btn2))
-                .addContainerGap(377, Short.MAX_VALUE))
+                .addContainerGap(378, Short.MAX_VALUE))
         );
 
         pp.add(p3_createmoim, "c3");
@@ -688,7 +677,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
         jLabel18.setText("검색단어 :");
 
-        searchBtn.setText("검색/전체보기");
+        searchBtn.setText("검색");
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBtnActionPerformed(evt);
@@ -714,8 +703,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         ));
         jScrollPane3.setViewportView(mainPrintTable);
-
-        tomainPanalBtn.setText("소모임");
 
         tomymoimPanalBtn.setText("내 모임");
         tomymoimPanalBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -782,52 +769,43 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             .addGroup(p4_mainpanalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
                     .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(hobby1Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(19, 19, 19)
-                        .addComponent(hobby2Btn)
-                        .addGap(18, 18, 18)
-                        .addComponent(hobby3Btn)
-                        .addGap(29, 29, 29)
-                        .addComponent(hobby4Byn)
-                        .addGap(18, 18, 18)
-                        .addComponent(hobby5Btn)
-                        .addGap(45, 45, 45)
-                        .addComponent(jLabel18)
-                        .addGap(18, 18, 18)
-                        .addComponent(searchword, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(main_img, javax.swing.GroupLayout.PREFERRED_SIZE, 486, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchBtn)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(moim_crea_Btn))
-                    .addComponent(jScrollPane3)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
-                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
+                        .addComponent(moim_detail_Btn)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                        .addGap(0, 82, Short.MAX_VALUE)
                         .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                                .addGap(172, 172, 172)
-                                .addComponent(tomainPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(main_img, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(hobby1Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(19, 19, 19)
+                                .addComponent(hobby2Btn)
+                                .addGap(18, 18, 18)
+                                .addComponent(hobby3Btn)
+                                .addGap(29, 29, 29)
+                                .addComponent(hobby4Byn)
+                                .addGap(18, 18, 18)
+                                .addComponent(hobby5Btn)
+                                .addGap(45, 45, 45)
+                                .addComponent(jLabel18)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchword, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(moim_detail_Btn))))
-                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(18, 944, Short.MAX_VALUE)
-                        .addComponent(logout_btn)))
-                .addGap(41, 41, 41))
+                                .addComponent(searchBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(moim_crea_Btn))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                                .addComponent(logout_btn)
+                                .addGap(41, 41, 41))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                                .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(242, 242, 242))))))
         );
         p4_mainpanalLayout.setVerticalGroup(
             p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -847,20 +825,18 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(main_img, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(p4_mainpanalLayout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                        .addGap(144, 144, 144)
                         .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(searchnum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(moim_detail_Btn))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGroup(p4_mainpanalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tomainPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
+                        .addGap(39, 39, 39)
+                        .addComponent(tomymoimPanalBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p4_mainpanalLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(main_img, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(67, 67, 67)))
                 .addComponent(logout_btn)
                 .addGap(41, 41, 41))
         );
@@ -1424,14 +1400,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        tomymoimPanalBtn1.setFont(new java.awt.Font("굴림", 0, 36)); // NOI18N
-        tomymoimPanalBtn1.setText("내 정보 보기");
-        tomymoimPanalBtn1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tomymoimPanalBtn1ActionPerformed(evt);
-            }
-        });
-
         jLabel30.setText("모임 번호");
 
         moim_delete_Btn.setText("모임 탈퇴");
@@ -1444,6 +1412,13 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         p10_time_v.setText("[ 가 입 기간");
 
         jLabel38.setText("가입 기간 :");
+
+        dropMemBtn.setText("회원 탈퇴");
+        dropMemBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dropMemBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout p10_mypagePanelLayout = new javax.swing.GroupLayout(p10_mypagePanel);
         p10_mypagePanel.setLayout(p10_mypagePanelLayout);
@@ -1500,54 +1475,58 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                         .addGap(51, 51, 51)
                         .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel37)
                             .addGroup(p10_mypagePanelLayout.createSequentialGroup()
-                                .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(tomymoimPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel37))
+                                .addGap(92, 92, 92)
+                                .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(2, 2, 2)))
-                .addContainerGap(255, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                .addComponent(dropMemBtn)
+                .addGap(61, 61, 61))
         );
         p10_mypagePanelLayout.setVerticalGroup(
             p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(p10_mypagePanelLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel28)
-                    .addComponent(update_mypage_Btn))
-                .addGap(38, 38, 38)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel29)
-                    .addComponent(myname_v))
-                .addGap(31, 31, 31)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel31)
-                    .addComponent(myloc_v)
-                    .addComponent(update_loc_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel33))
-                .addGap(35, 35, 35)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel34)
-                    .addComponent(myhobby_v)
-                    .addComponent(jLabel36)
-                    .addComponent(update_hobby_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(38, 38, 38)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel38)
-                    .addComponent(p10_time_v, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                .addComponent(jLabel37)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(moimnum_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(moim_delete_Btn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tomymoimPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, p10_mypagePanelLayout.createSequentialGroup()
+                .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(p10_mypagePanelLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(dropMemBtn))
+                    .addGroup(p10_mypagePanelLayout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel28)
+                            .addComponent(update_mypage_Btn))
+                        .addGap(38, 38, 38)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel29)
+                            .addComponent(myname_v))
+                        .addGap(31, 31, 31)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel31)
+                            .addComponent(myloc_v)
+                            .addComponent(update_loc_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel33))
+                        .addGap(35, 35, 35)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel34)
+                            .addComponent(myhobby_v)
+                            .addComponent(jLabel36)
+                            .addComponent(update_hobby_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(38, 38, 38)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel38)
+                            .addComponent(p10_time_v, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                        .addComponent(jLabel37)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35)
+                        .addGroup(p10_mypagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel30)
+                            .addComponent(moimnum_v, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(moim_delete_Btn))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tomainPanalBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(25, 25, 25))
         );
 
@@ -1570,7 +1549,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             }
         });
 
-        p11_deleteBtn.setText("강제탈퇴");
+        p11_deleteBtn.setText("회원강퇴");
         p11_deleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 p11_deleteBtnActionPerformed(evt);
@@ -1720,7 +1699,9 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
             //checkIdMd -> return 1일경우
         mem = md.loginMd(mem,id); //loginMd (memberdto에 id에 해당하는 유저의 정보를 받아 저장합니다) 
         JOptionPane.showMessageDialog(this, "환영합니다","로그인 성공!" , JOptionPane.INFORMATION_MESSAGE);
-        groupList(md.groupListMd(mem));//groupListMd -> 유저의 정보 중 취미에 해당하는 번호를 우선순위로 메인페이지에 출력하는 메서드입니다
+        //로그인이 성공하게되면
+        //groupListMd -> 유저의 정보 중 취미에 해당하는 번호를 우선순위로 메인페이지에 출력하는 메서드입니다
+        groupList(md.groupListMd(mem));
         mainImgShow(mem.getMhobby());
         card.show(pp, "c4");
         }else if(a ==0){
@@ -1820,7 +1801,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private void main_page_Btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_main_page_Btn2ActionPerformed
         card.show(pp, "c4");
     }//GEN-LAST:event_main_page_Btn2ActionPerformed
-
+    // 모임장 버튼
     private void tomoiminfoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomoiminfoBtnActionPerformed
     p11_info.setText(group.getGinfo());
     AJoin aj = new AJoin();
@@ -1873,10 +1854,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     groupList(md.groupListMd(mem));
     card.show(pp, "c5");
     }//GEN-LAST:event_chating_pageBtn2ActionPerformed
-
-    private void tomymoimPanalBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tomymoimPanalBtn1ActionPerformed
-        card.show(pp, "c10");
-    }//GEN-LAST:event_tomymoimPanalBtn1ActionPerformed
     // 내 정보 변경 버튼
     private void update_mypage_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_mypage_BtnActionPerformed
         String mloc = (String) update_loc_combobox.getSelectedItem();
@@ -1940,11 +1917,11 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
     // 상세 게시글 보기
     private void detail_board_show_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detail_board_show_BtnActionPerformed
-        try {
+       try {
         BoardComm bc = new BoardComm();
         board = new Board();
         board.setWlist(Integer.parseInt(search_detail_board.getText()));
-        board = md.getDetail(board);
+        board = md.getDetail(board,group);
         bc.setBo(board);
         board_writer_name.setText(board.getAmember().getMname());
         content_name.setText(board.getSubject());
@@ -1953,6 +1930,8 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         card.show(pp, "c9");
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(board_content, "숫자를 입력해주세요");
+        } catch(NullPointerException e){
+            JOptionPane.showMessageDialog(board_content, "작성된 게시글 번호가 없습니다.");
         }
     }//GEN-LAST:event_detail_board_show_BtnActionPerformed
  // 게시글 상세보기에서 게시글 목록으로 뒤로가는 버튼
@@ -2007,24 +1986,30 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
     private void moim_delete_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_delete_BtnActionPerformed
         // 내정보페이지에서 모임 탈퇴하기 버튼
-        int delnum = Integer.parseInt(moimnum_v.getText());
+       
+            int delnum = Integer.parseInt(moimnum_v.getText());
         AJoin aj = new AJoin();
         aj.setMembernum(mem.getMembernum());
         aj.setGroupnum(delnum);
+        int num = 0;
         int b = md.ckMoimjang2(aj);
-
         if(b==1){ // 모임장이 모임 삭제
-             int i = JOptionPane.showConfirmDialog(rootPane, "당신은 모임장입니다 모임을 삭제하시겠습니까?", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
-
-        if(i==0){
-        md.deleteMyMoim2(aj);
-        JOptionPane.showMessageDialog(board_content, "모임이 삭제되었습니다.");
-         myGroupList(md.listMyGroupMd(mem.getMembernum()));
+            int i = JOptionPane.showConfirmDialog(rootPane, "당신은 모임장입니다 모임을 삭제하시겠습니까?", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if(i==0){
+                md.deleteMyMoim2(delnum);
+                JOptionPane.showMessageDialog(board_content, "모임이 삭제되었습니다.");
+                 myGroupList(md.listMyGroupMd(mem.getMembernum()));
+                }
+        } else{
+            num = md.deleteMyMoimMd(aj);
+            if(num==1){
+                JOptionPane.showMessageDialog(null, aj.getGroupnum()+"번 모임을 탈퇴하였습니다.", "알림창", JOptionPane.INFORMATION_MESSAGE);
+            } else{
+                 JOptionPane.showMessageDialog(null, "가입한 모임번호가 아닙니다.","알림창", JOptionPane.ERROR_MESSAGE);
             }
-        }else{ // 모임원이 모임 탈퇴
-        md.deleteMyMoimMd(aj);
-        myGroupList(md.listMyGroupMd(mem.getMembernum()));
-        }    
+            
+        }
+        
     }//GEN-LAST:event_moim_delete_BtnActionPerformed
 
     private void tochatingPanalBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tochatingPanalBtn2ActionPerformed
@@ -2032,13 +2017,22 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_tochatingPanalBtn2ActionPerformed
 
     private void p11_joinBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_joinBtnActionPerformed
-        try{
+          try{
         int joinnum = Integer.parseInt(p11_join_v.getText());
-        AJoin aj = md.getAplicantInfo(joinnum);
-        md.acceptJoin(aj);
+        AJoin aj = new AJoin();
+        AMember m = new AMember();
+        m.setMembernum(joinnum);
+        aj.setAmember(m);
+        aj.setAgroup(group);
+        int a = md.getAplicantInfo(aj);
+        if(a==1){
+        md.acceptJoin(joinnum,group.getGroupnum());
         JOptionPane.showMessageDialog(board_content, "가입이 승인되었습니다.");
         getApplicantList(md.getApplicantList(group));
         groupdetailList(md.listGroupMd(group.getGroupnum()));
+        }else{
+           JOptionPane.showMessageDialog(board_content, "회원 번호를 제대로 입력해주세요.");
+        }
         } catch(NumberFormatException e){
             System.out.println("숫자를 입력해주세요");
         }
@@ -2090,25 +2084,32 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
 
     private void moim_detail_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moim_detail_BtnActionPerformed
         //모임 번호로 search한 모임 상세페이지 이동버튼
+        try{
         int moimnum = Integer.parseInt(searchnum.getText().trim()) ;
+        System.out.println(moimnum);
         group = new AGroup();
         group.setGroupnum(moimnum);
+        int ckgroup = md.ckGroup(group);
         group = md.enterGroupMd(group);
         moimTitle.setText(group.getGname());
         moim_info.setText(group.getGinfo());
-        int ckgroup = md.ckGroup(group);
         if(ckgroup == 1){
         groupdetailList(md.listGroupMd(group.getGroupnum()));
         card.show(pp, "c5");
         }else{
         JOptionPane.showMessageDialog(board_content, group.getGroupnum()+"는 없는 그룹 번호입니다.");
         }
+        } catch(NumberFormatException e){
+           JOptionPane.showMessageDialog(board_content, "그룹번호를 입력해주세요.");
+        }  
     }//GEN-LAST:event_moim_detail_BtnActionPerformed
 
    //메인페이지에서 로그아웃 버튼
     private void logout_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logout_btnActionPerformed
-
         card.show(pp, "c1");
+        
+        
+        
     }//GEN-LAST:event_logout_btnActionPerformed
 
     private void hobby5BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hobby5BtnActionPerformed
@@ -2179,11 +2180,17 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         m.setMembernum(kicknum);
         aj.setAmember(m);
         aj.setAgroup(group);
-        int a = JOptionPane.showConfirmDialog(rootPane, "정말 추방하시겠습니까??", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
-        if(a==0){
-        md.kickPpl(aj);
-        groupdetailList(md.listGroupMd(group.getGroupnum()));
+        int a = md.kickPpl(aj);
+        if(a==1){
+        int b = JOptionPane.showConfirmDialog(rootPane, "정말 추방하시겠습니까??", "확인!!", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+        if(b==0){
+            JOptionPane.showMessageDialog(this, "회원 추방이 완료되었습니다.");
+            groupdetailList(md.listGroupMd(group.getGroupnum()));
+            }
+        }else if(a==0){
+            JOptionPane.showMessageDialog(board_content, "모임장 본인은 추방할수 없습니다.");
         }
+        
     }//GEN-LAST:event_p11_deleteBtnActionPerformed
 
     private void p11_infoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p11_infoBtnActionPerformed
@@ -2193,25 +2200,26 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(board_content, "소개글이 변경되었습니다");
     }//GEN-LAST:event_p11_infoBtnActionPerformed
 
-    private void chkUsedIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUsedIdActionPerformed
-        if(md.chkUsedIdMd(join_id.getText()) == true){
-            JOptionPane.showMessageDialog(board_content, "사용 중인 아이디");
-            join_id.setText("");
-            return;
-        } else{
-            JOptionPane.showMessageDialog(board_content, "사용 가능한 아이디");
-        }
-    }//GEN-LAST:event_chkUsedIdActionPerformed
+    private void useMidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useMidActionPerformed
+        AMember a = new AMember();
+            if(md.chkUsedId(join_id.getText()) == true){
+                JOptionPane.showMessageDialog(board_content, "사용중인 아이디");
+                join_id.setText("");
+                return;
+            }else{
+                JOptionPane.showMessageDialog(board_content, "사용가능한 아이디");
+            }
+    }//GEN-LAST:event_useMidActionPerformed
 
-    private void chkUsedGroupNmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkUsedGroupNmActionPerformed
-        if(md.chkUsedGroupNm(cmoim_name.getText()) == true) {
-            JOptionPane.showMessageDialog(board_content, "사용 중인 모임명");
-            cmoim_name.setText("");
-            return;
-        } else {
-            JOptionPane.showMessageDialog(board_content, "사용 가능한 모임명");
+    private void dropMemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dropMemBtnActionPerformed
+        int ck = JOptionPane.showConfirmDialog(board_content, "탈퇴하시겠습니까?", "탈퇴", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if(ck == 0){
+            md.dropMemberMd(mem);
+            card.show(pp, "c1");
+        }else{
+            
         }
-    }//GEN-LAST:event_chkUsedGroupNmActionPerformed
+    }//GEN-LAST:event_dropMemBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -2230,13 +2238,13 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Asemi_ui_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Asemi_ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Asemi_ui_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Asemi_ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Asemi_ui_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Asemi_ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Asemi_ui_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Asemi_ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -2258,8 +2266,6 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JTextArea chatScreen;
     private javax.swing.JButton chating_pageBtn2;
-    private javax.swing.JButton chkUsedGroupNm;
-    private javax.swing.JButton chkUsedId;
     private javax.swing.JButton cmoimBtn;
     private javax.swing.JTextField cmoim_info;
     private javax.swing.JTextField cmoim_name;
@@ -2268,6 +2274,7 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JLabel content_name;
     private javax.swing.JButton create_board_Btn;
     private javax.swing.JButton detail_board_show_Btn;
+    private javax.swing.JButton dropMemBtn;
     private javax.swing.JTextField gle;
     private javax.swing.JTextField glename;
     private javax.swing.JButton hobby1Btn;
@@ -2393,15 +2400,14 @@ public class Asemi_ui_1 extends javax.swing.JFrame {
     private javax.swing.JButton tochatingPanalBtn;
     private javax.swing.JButton tochatingPanalBtn1;
     private javax.swing.JButton tochatingPanalBtn2;
-    private javax.swing.JButton tomainPanalBtn;
     private javax.swing.JButton tomainPanalBtn1;
     private javax.swing.JButton tomoiminfoBtn;
     private javax.swing.JButton tomoiminfoBtn1;
     private javax.swing.JButton tomoiminfoBtn2;
     private javax.swing.JButton tomymoimPanalBtn;
-    private javax.swing.JButton tomymoimPanalBtn1;
     private javax.swing.JComboBox<String> update_hobby_combobox;
     private javax.swing.JComboBox<String> update_loc_combobox;
     private javax.swing.JButton update_mypage_Btn;
+    private javax.swing.JButton useMid;
     // End of variables declaration//GEN-END:variables
 }

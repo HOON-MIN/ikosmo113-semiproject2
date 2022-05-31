@@ -238,7 +238,7 @@
                           </Group>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="chkUsedId" min="-2" max="-2" attributes="0"/>
+                      <Component id="useMid" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="104" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -249,7 +249,7 @@
                           <Component id="join_hobbyCom" min="-2" pref="115" max="-2" attributes="0"/>
                           <Component id="join_locCom" min="-2" pref="115" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="365" max="32767" attributes="0"/>
+                      <EmptySpace pref="391" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -264,7 +264,7 @@
                           <Component id="join_id" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="join_locCom" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="chkUsedId" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="useMid" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -396,12 +396,12 @@
                 <Property name="text" type="java.lang.String" value="-"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="chkUsedId">
+            <Component class="javax.swing.JButton" name="useMid">
               <Properties>
-                <Property name="text" type="java.lang.String" value="ID &#xc911;&#xbcf5;&#xccb4;&#xd06c;"/>
+                <Property name="text" type="java.lang.String" value="&#xc911;&#xbcf5;&#xd655;&#xc778;"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chkUsedIdActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="useMidActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
@@ -445,9 +445,7 @@
                                       <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
-                              <Component id="chkUsedGroupNm" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="337" max="32767" attributes="0"/>
+                              <EmptySpace min="49" pref="552" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
@@ -461,11 +459,10 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                       <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cmoim_name" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="chkUsedGroupNm" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -477,7 +474,7 @@
                           <Component id="cmoimBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="main_page_Btn2" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="377" max="32767" attributes="0"/>
+                      <EmptySpace pref="378" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -524,14 +521,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="main_page_Btn2ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="chkUsedGroupNm">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="&#xbaa8;&#xc784;&#xba85; &#xc911;&#xbcf5; &#xd655;&#xc778;"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chkUsedGroupNmActionPerformed"/>
-              </Events>
-            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="p4_mainpanal">
@@ -552,63 +541,50 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="hobby1Btn" min="-2" pref="124" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
-                              <Component id="hobby2Btn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="hobby3Btn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                              <Component id="hobby4Byn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="hobby5Btn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                              <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="searchword" min="-2" pref="110" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="moim_crea_Btn" min="-2" max="-2" attributes="0"/>
-                          </Group>
                           <Component id="jScrollPane3" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="main_img" min="-2" pref="486" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="searchnum" min="-2" pref="122" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="moim_detail_Btn" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="0" pref="82" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <EmptySpace min="-2" pref="172" max="-2" attributes="0"/>
-                                      <Component id="tomainPanalBtn" min="-2" pref="298" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="hobby1Btn" min="-2" pref="124" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                                      <Component id="hobby2Btn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="hobby3Btn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                                      <Component id="hobby4Byn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="hobby5Btn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                                      <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="searchword" min="-2" pref="110" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="main_img" min="-2" pref="587" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="tomymoimPanalBtn" min="-2" pref="310" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="moim_crea_Btn" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="searchnum" min="-2" pref="122" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="moim_detail_Btn" min="-2" max="-2" attributes="0"/>
+                                      <Component id="logout_btn" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="tomymoimPanalBtn" min="-2" pref="310" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="242" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
-                          <Group type="102" attributes="0">
-                              <EmptySpace type="separate" pref="944" max="32767" attributes="0"/>
-                              <Component id="logout_btn" min="-2" max="-2" attributes="0"/>
-                          </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -631,25 +607,22 @@
                       <Component id="jScrollPane3" min="-2" pref="304" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="main_img" pref="197" max="32767" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="144" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="searchnum" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="moim_detail_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                              <Component id="tomymoimPanalBtn" min="-2" pref="53" max="-2" attributes="0"/>
+                              <EmptySpace pref="14" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="main_img" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="tomymoimPanalBtn" alignment="1" max="32767" attributes="0"/>
-                          <Component id="tomainPanalBtn" min="-2" pref="53" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Component id="logout_btn" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                   </Group>
@@ -666,7 +639,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="searchBtn">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#xac80;&#xc0c9;/&#xc804;&#xccb4;&#xbcf4;&#xae30;"/>
+                <Property name="text" type="java.lang.String" value="&#xac80;&#xc0c9;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchBtnActionPerformed"/>
@@ -701,11 +674,6 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JButton" name="tomainPanalBtn">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="&#xc18c;&#xbaa8;&#xc784;"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="tomymoimPanalBtn">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#xb0b4; &#xbaa8;&#xc784;"/>
@@ -1601,66 +1569,72 @@
                               <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jScrollPane8" min="-2" pref="756" max="-2" attributes="0"/>
-                                  <Group type="102" attributes="0">
-                                      <Component id="tomainPanalBtn1" min="-2" pref="422" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="tomymoimPanalBtn1" min="-2" pref="320" max="-2" attributes="0"/>
-                                  </Group>
                                   <Component id="jLabel37" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="92" max="-2" attributes="0"/>
+                                      <Component id="tomainPanalBtn1" min="-2" pref="422" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="255" max="32767" attributes="0"/>
+                      <EmptySpace pref="101" max="32767" attributes="0"/>
+                      <Component id="dropMemBtn" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="update_mypage_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="myname_v" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="myloc_v" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="update_loc_combobox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel33" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel34" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="myhobby_v" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel36" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="update_hobby_combobox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel38" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="p10_time_v" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="51" max="32767" attributes="0"/>
-                      <Component id="jLabel37" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jScrollPane8" min="-2" pref="131" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel30" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="moimnum_v" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="moim_delete_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tomainPanalBtn1" alignment="3" min="-2" pref="87" max="-2" attributes="0"/>
-                          <Component id="tomymoimPanalBtn1" alignment="3" min="-2" pref="87" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="dropMemBtn" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="update_mypage_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="myname_v" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="myloc_v" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="update_loc_combobox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel33" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel34" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="myhobby_v" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel36" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="update_hobby_combobox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel38" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="p10_time_v" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="51" max="32767" attributes="0"/>
+                              <Component id="jLabel37" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="jScrollPane8" min="-2" pref="131" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel30" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="moimnum_v" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="moim_delete_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="tomainPanalBtn1" min="-2" pref="87" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                   </Group>
@@ -1792,17 +1766,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tomainPanalBtn1ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="tomymoimPanalBtn1">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="&#xad74;&#xb9bc;" size="36" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="&#xb0b4; &#xc815;&#xbcf4; &#xbcf4;&#xae30;"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tomymoimPanalBtn1ActionPerformed"/>
-              </Events>
-            </Component>
             <Component class="javax.swing.JLabel" name="jLabel30">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#xbaa8;&#xc784; &#xbc88;&#xd638;"/>
@@ -1827,6 +1790,14 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#xac00;&#xc785; &#xae30;&#xac04; :"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="dropMemBtn">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#xd68c;&#xc6d0; &#xd0c8;&#xd1f4;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dropMemBtnActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -1951,7 +1922,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="p11_deleteBtn">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#xac15;&#xc81c;&#xd0c8;&#xd1f4;"/>
+                <Property name="text" type="java.lang.String" value="&#xd68c;&#xc6d0;&#xac15;&#xd1f4;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="p11_deleteBtnActionPerformed"/>
